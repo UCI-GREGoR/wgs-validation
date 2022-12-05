@@ -3,6 +3,18 @@ description: global configuration
 properties:
   manifest:
     type: string
+  reference_datasets:
+    type: object
+    patternProperties:
+      "^.*$":
+        type: object
+        properties:
+          vcf:
+            type: string
+          required:
+            - vcf
+          additionalProperties: no
 required:
   - manifest
+  - reference_datasets
 additionalProperties: no

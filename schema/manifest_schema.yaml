@@ -4,6 +4,10 @@ properties:
   vcf:
     type: string
     description: "path to and filename of experimental vcf"
+  reference_datasets:
+    type: string
+    description: "comma-delimited list of configured reference datasets to use as ground truth for this vcf"
 required:
   - vcf
+  - reference_datasets
 additionalProperties: no

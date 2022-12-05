@@ -1,2 +1,2 @@
-vcf
-filename.vcf.gz
+vcf	reference_datasets
+octopus.vcf.gz	GIAB_HG001_GRCh37,GIAB_HG002_GRCh37
