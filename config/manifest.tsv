@@ -1,2 +1,2 @@
-vcf	reference_datasets
-octopus.vcf.gz	GIAB_HG001_GRCh37,GIAB_HG002_GRCh37
+experimental_dataset	vcf	reference_datasets
+test_NA12878	octopus.vcf.gz	GIAB_HG001_GRCh37,GIAB_HG002_GRCh37

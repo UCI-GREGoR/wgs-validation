@@ -11,9 +11,9 @@ properties:
         properties:
           vcf:
             type: string
-          required:
-            - vcf
-          additionalProperties: no
+        required:
+          - vcf
+        additionalProperties: no
 required:
   - manifest
   - reference_datasets

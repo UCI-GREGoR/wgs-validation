@@ -1,6 +1,9 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 description: an entry in the sample manifest
 properties:
+  experimental_dataset:
+    type: string
+    description: "unique identifier for subject or library"
   vcf:
     type: string
     description: "path to and filename of experimental vcf"
@@ -8,6 +11,7 @@ properties:
     type: string
     description: "comma-delimited list of configured reference datasets to use as ground truth for this vcf"
 required:
+  - experimental_dataset
   - vcf
   - reference_datasets
 additionalProperties: no
