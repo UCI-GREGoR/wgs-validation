@@ -1,0 +1,37 @@
+# The main entry point of your workflow.
+# After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
+
+import os
+import pathlib
+import pandas as pd
+from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+from snakemake.utils import validate
+
+S3 = S3RemoteProvider()
+
+sys.path.insert(0, ".")
+
+shell.executable("/bin/bash")
+shell.prefix("set -euo pipefail; ")
+
+
+configfile: "config/config.yaml"
+
+
+validate(config, "../schema/global_config_schema.yaml")
+
+tempDir = "temp"
+manifest = config["manifest"]
+manifest = pd.read_csv(manifest, sep="\t")
+
+
+validate(manifest, "../schema/manifest_schema.yaml")
+
+
+TARGETS = []
+
+
+rule all:
+    input:
+        TARGETS,
