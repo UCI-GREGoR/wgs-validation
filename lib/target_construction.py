@@ -11,6 +11,20 @@ S3 = S3RemoteProvider()
 HTTP = HTTPRemoteProvider()
 
 
+def wrap_remote_file(fn: str) -> str | AnnotatedString:
+    """
+    Given a filename, potentially wrap it in a remote handler
+    """
+    mapped_name = fn
+    if mapped_name.startswith("s3://"):
+        return S3.remote(mapped_name)
+    elif mapped_name.startswith("https://"):
+        return HTTP.remote(mapped_name)
+    elif mapped_name.startswith("ftp://"):
+        return FTP.remote(mapped_name)
+    return mapped_name
+
+
 def construct_targets(config: dict, manifest: pd.DataFrame) -> list:
     """
     Use configuration and manifest data to generate the set of comparisons
@@ -37,13 +51,7 @@ def map_reference_file(wildcards: Namedlist, config: dict) -> str | AnnotatedStr
     ## There have been periodic issues with the remote provider interface, but it seems
     ## to be working, somewhat inefficiently but very conveniently, for the time being.
     mapped_name = config["reference_datasets"][wildcards.reference]["vcf"]
-    if mapped_name.startswith("s3://"):
-        return S3.remote(mapped_name)
-    elif mapped_name.startswith("https://"):
-        return HTTP.remote(mapped_name)
-    elif mapped_name.startswith("ftp://"):
-        return FTP.remote(mapped_name)
-    return mapped_name
+    return wrap_remote_file(mapped_name)
 
 
 def map_experimental_file(wildcards: Namedlist, manifest: pd.DataFrame) -> str | AnnotatedString:
@@ -58,10 +66,4 @@ def map_experimental_file(wildcards: Namedlist, manifest: pd.DataFrame) -> str |
     ## There have been periodic issues with the remote provider interface, but it seems
     ## to be working, somewhat inefficiently but very conveniently, for the time being.
     mapped_name = manifest.loc[wildcards.experimental, "vcf"]
-    if mapped_name.startswith("s3://"):
-        return S3.remote(mapped_name)
-    elif mapped_name.startswith("https://"):
-        return HTTP.remote(mapped_name)
-    elif mapped_name.startswith("ftp://"):
-        return FTP.remote(mapped_name)
-    return mapped_name
+    return wrap_remote_file(mapped_name)

@@ -14,7 +14,23 @@ properties:
         required:
           - vcf
         additionalProperties: no
+  genome-build:
+    type: string
+    pattern: "^grch[0-9]+$"
+  genomes:
+    type: object
+    patternProperties:
+      "^grch[0-9]+$":
+        type: object
+        properties:
+          fasta:
+            type: string
+        required:
+          - fasta
+        additionalProperties: no
 required:
   - manifest
   - reference_datasets
+  - genome-build
+  - genomes
 additionalProperties: no
