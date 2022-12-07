@@ -25,6 +25,15 @@ def wrap_remote_file(fn: str) -> str | AnnotatedString:
     return mapped_name
 
 
+def get_happy_output_files(config: dict, manifest: pd.DataFrame) -> list:
+    """
+    Use configuration and manifest data to generate the set of comparisons
+    required for a full complement of hap.py runs.
+    """
+    res = []
+    return res
+
+
 def construct_targets(config: dict, manifest: pd.DataFrame) -> list:
     """
     Use configuration and manifest data to generate the set of comparisons

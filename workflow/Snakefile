@@ -31,7 +31,7 @@ reference_build = config["genome-build"]
 validate(manifest, "../schema/manifest_schema.yaml")
 
 
-TARGETS = [tc.construct_targets(config, manifest)]
+TARGETS = ["results/reports/control_validation.html"]
 
 
 rule all:
