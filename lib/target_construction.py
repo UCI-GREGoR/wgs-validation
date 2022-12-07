@@ -18,7 +18,7 @@ def wrap_remote_file(fn: str) -> str | AnnotatedString:
     mapped_name = fn
     if mapped_name.startswith("s3://"):
         return S3.remote(mapped_name)
-    elif mapped_name.startswith("https://"):
+    elif mapped_name.startswith("https://") or mapped_name.startswith("http://"):
         return HTTP.remote(mapped_name)
     elif mapped_name.startswith("ftp://"):
         return FTP.remote(mapped_name)
