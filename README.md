@@ -25,11 +25,28 @@ Configure the workflow according to your needs via editing the files in the `con
 
 The following settings are recognized in `config/config.yaml`.
 
-- `manifest`: relative path to run manifest
+- `experiment-manifest`: relative path to manifest of experimental vcfs
+- `reference-manifest`: relative path to manifest of reference (i.e. "gold standard") vcfs
+- `comparisons-manifest`: relative path to manifest of desired experimental/reference comparisons
+- `genome-build`: desired genome reference build for the comparisons. referenced by aliases specified in `genomes` block
+- `genomes`: an arbitrary set of reference genome specifications. intended to be assigned tags such as `grch38`, `grch37`, etc. within each block:
+  - `fasta`: path to genome fasta corresponding to this build. can be a path to a local file, or an http/ftp link, or an s3 path
 
 
-The following columns are expected in the run manifest, by default at `config/manifest.tsv`:
-- `vcf`: experimental vcf filename
+The following columns are expected in the experiment manifest, by default at `config/manifest_experiment.tsv`:
+- `experimental_dataset`: arbitrary, unique alias for this experimental dataset
+- `vcf`: path to experimental dataset vcf
+
+The following columns are expected in the reference manifest, by default at `config/manifest_reference.tsv`:
+- `reference_dataset`: arbitrary, unique alias for this reference dataset
+- `vcf`: path to reference dataset vcf
+
+The following columns are expected in the comparisons manifest, by default at `config/manifest_comparisons.tsv`:
+- `experimental_dataset`: experimental dataset for this comparison, referenced by unique alias
+- `reference_dataset`: reference dataset for this comparison, referenced by unique alias
+
+Note that the entries in individual columns of the comparisons manifest are not intended to be unique, so
+multiple comparisons involving the same file are expected.
 
 ### Step 3: Install Snakemake
 
@@ -86,7 +103,7 @@ Whenever you want to synchronize your workflow copy with new developments from u
 3. Create a diff with the current version: `git diff HEAD upstream/default workflow > upstream-changes.diff`.
 4. Investigate the changes: `vim upstream-changes.diff`.
 5. Apply the modified diff via: `git apply upstream-changes.diff`.
-6. Carefully check whether you need to update the config files: `git diff HEAD upstream/master config`. If so, do it manually, and only where necessary, since you would otherwise likely overwrite your settings and samples.
+6. Carefully check whether you need to update the config files: `git diff HEAD upstream/default config`. If so, do it manually, and only where necessary, since you would otherwise likely overwrite your settings and samples.
 
 
 ### Step 8: Contribute back
