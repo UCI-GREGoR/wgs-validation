@@ -40,5 +40,6 @@ rule all:
 
 
 include: "rules/acquire_data.smk"
+include: "rules/happy.smk"
 include: "rules/reference_data.smk"
 include: "rules/vcfeval.smk"
