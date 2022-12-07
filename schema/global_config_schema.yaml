@@ -1,19 +1,12 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 description: global configuration
 properties:
-  manifest:
+  experiment-manifest:
     type: string
-  reference_datasets:
-    type: object
-    patternProperties:
-      "^.*$":
-        type: object
-        properties:
-          vcf:
-            type: string
-        required:
-          - vcf
-        additionalProperties: no
+  reference-manifest:
+    type: string
+  comparisons-manifest:
+    type: string
   genome-build:
     type: string
     pattern: "^grch[0-9]+$"
@@ -29,8 +22,9 @@ properties:
           - fasta
         additionalProperties: no
 required:
-  - manifest
-  - reference_datasets
+  - experiment-manifest
+  - reference-manifest
+  - comparisons-manifest
   - genome-build
   - genomes
 additionalProperties: no

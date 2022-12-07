@@ -1,0 +1,13 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: an entry in the comparisons manifest
+properties:
+  experimental_dataset:
+    type: string
+    description: "unique identifier for experiment manifest entry to use for comparison"
+  reference_dataset:
+    type: string
+    description: "unique identifier of reference manifest entry to use for comparison"
+required:
+  - experimental_dataset
+  - reference_dataset
+additionalProperties: no
