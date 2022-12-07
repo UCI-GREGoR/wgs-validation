@@ -18,8 +18,20 @@ properties:
         properties:
           fasta:
             type: string
+          stratification-regions:
+            type: object
+            properties:
+              ftp:
+                type: string
+              dir:
+                type: string
+            required:
+              - ftp
+              - dir
+            additionalProperties: no
         required:
           - fasta
+          - stratification-regions
         additionalProperties: no
 required:
   - experiment-manifest

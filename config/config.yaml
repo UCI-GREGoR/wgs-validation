@@ -12,11 +12,12 @@ reference-manifest: "config/manifest_reference.tsv"
 comparisons-manifest: "config/manifest_comparisons.tsv"
 
 
-
 genome-build: "grch37"
 
-
-
+## Stratification regions are suggested for use with hap.py style analysis. All thanks to Justin Zook lol
 genomes:
   grch37:
     fasta: "s3://invitae-health-chameleon-dev/reference_data/grch37/human_g1k_v37_modified/human_g1k_v37_modified.fasta"
+    stratification-regions:
+      ftp: "ftp-trace.ncbi.nlm.nih.gov"
+      dir: "ReferenceSamples/giab/release/genome-stratifications/v3.1/GRCh37"

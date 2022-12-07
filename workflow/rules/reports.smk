@@ -4,9 +4,7 @@ rule control_validation_report:
     from either hap.py or vcfeval
     """
     input:
-        lambda wildcards: tc.get_happy_output_files(
-            config, manifest_experiment, manifest_reference, manifest_comparisons
-        ),
+        lambda wildcards: tc.get_happy_output_files(config, manifest_comparisons),
     output:
         "results/reports/control_validation.html",
     params:
