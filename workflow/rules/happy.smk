@@ -9,6 +9,7 @@ rule happy_run:
         experimental="results/experimentals/{experimental}.vcf.gz",
         reference="results/references/{reference}.vcf.gz",
         fa="results/{}/ref.fasta".format(reference_build),
+        sdf="results/{}/ref.fasta.sdf".format(reference_build),
         bed=lambda wildcards: tc.get_happy_region_by_index(wildcards, config, checkpoints),
     output:
         vcf="results/happy/{experimental}/{reference}/{region_set}/results.vcf.gz",
@@ -23,7 +24,8 @@ rule happy_run:
         qname="small",
         mem_mb="16000",
     shell:
-        "hap.py {input.reference} {input.experimental} -f {input.bed} -r {input.fa} -o {params.outprefix}"
+        "hap.py {input.reference} {input.experimental} -f {input.bed} -r {input.fa} -o {params.outprefix} "
+        "-V --engine=vcfeval --engine-vcfeval-template={input.fa}"
 
 
 rule happy_combine_results:

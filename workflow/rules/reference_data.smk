@@ -52,12 +52,12 @@ rule acquire_fasta:
 
 rule create_sdf:
     """
-    Convert a fasta to an sdf format file for rtg tools' particularities
+    Convert a fasta to an sdf format *folder* for rtg tools' particularities
     """
     input:
         "results/{genome}/ref.fasta",
     output:
-        "results/{genome}/ref.fasta.sdf",
+        directory("results/{genome}/ref.fasta.sdf"),
     benchmark:
         "results/performance_benchmarks/create_sdf/{genome}.tsv"
     conda:
