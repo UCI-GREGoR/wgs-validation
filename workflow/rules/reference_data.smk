@@ -50,6 +50,26 @@ rule acquire_fasta:
         "cp {input} {output}"
 
 
+rule create_fai:
+    """
+    From a fasta file, create an fai index
+    """
+    input:
+        "{prefix}.fasta",
+    output:
+        "{prefix}.fasta.fai",
+    benchmark:
+        "results/performance_benchmarks/create_fai/{prefix}.fasta.fai.tsv"
+    conda:
+        "../envs/samtools.yaml"
+    threads: 1
+    resources:
+        mem_mb="4000",
+        qname="small",
+    shell:
+        "samtools faidx {input}"
+
+
 rule create_sdf:
     """
     Convert a fasta to an sdf format *folder* for rtg tools' particularities
@@ -65,6 +85,6 @@ rule create_sdf:
     threads: 1
     resources:
         qname="small",
-        mem_mb="2000",
+        mem_mb="16000",
     shell:
-        "rtg format -f fasta -o {output} {input}"
+        "rtg RTG_MEM=12G format -f fasta -o {output} {input}"

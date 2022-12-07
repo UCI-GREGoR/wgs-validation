@@ -9,23 +9,25 @@ rule happy_run:
         experimental="results/experimentals/{experimental}.vcf.gz",
         reference="results/references/{reference}.vcf.gz",
         fa="results/{}/ref.fasta".format(reference_build),
+        fai="results/{}/ref.fasta.fai".format(reference_build),
         sdf="results/{}/ref.fasta.sdf".format(reference_build),
         bed=lambda wildcards: tc.get_happy_region_by_index(wildcards, config, checkpoints),
     output:
         vcf="results/happy/{experimental}/{reference}/{region_set}/results.vcf.gz",
     params:
-        outprefix="results/happy/{experimental}/{reference}/region_set}/results",
+        outprefix="results/happy/{experimental}/{reference}/{region_set}/results",
     benchmark:
         "results/performance_benchmarks/happy_run/{experimental}/{reference}/{region_set}/results.tsv"
     conda:
         "../envs/happy.yaml"
-    threads: 8
+    threads: 4
     resources:
         qname="small",
-        mem_mb="16000",
+        mem_mb="64000",
     shell:
-        "hap.py {input.reference} {input.experimental} -f {input.bed} -r {input.fa} -o {params.outprefix} "
-        "-V --engine=vcfeval --engine-vcfeval-template={input.fa}"
+        "RTG_MEM=12G HGREF={input.fa} hap.py {input.reference} {input.experimental} -f {input.bed} -o {params.outprefix} "
+        "-V --engine=vcfeval --engine-vcfeval-path=${{CONDA_PREFIX}}/bin/rtg --engine-vcfeval-template={input.fa} "
+        "--threads {threads}"
 
 
 rule happy_combine_results:
