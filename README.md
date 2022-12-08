@@ -28,13 +28,19 @@ The following settings are recognized in `config/config.yaml`.
 - `experiment-manifest`: relative path to manifest of experimental vcfs
 - `reference-manifest`: relative path to manifest of reference (i.e. "gold standard") vcfs
 - `comparisons-manifest`: relative path to manifest of desired experimental/reference comparisons
+- `happy-bedfiles-per-stratification`: how many stratification region sets should be dispatched to a single hap.py job. hap.py is a resource hog, and a relatively small number of stratification sets to the same run can cause it to explode. a setting of no more that 6 has worked in the past, though that was in a different setting
 - `genome-build`: desired genome reference build for the comparisons. referenced by aliases specified in `genomes` block
 - `genomes`: an arbitrary set of reference genome specifications. intended to be assigned tags such as `grch38`, `grch37`, etc. within each block:
   - `fasta`: path to genome fasta corresponding to this build. can be a path to a local file, or an http/ftp link, or an s3 path
+  - `confident-regions`: arbitrarily many bedfiles describing a confident background on which comparison should be evaluated. bedfiles are specified in `key: value` pairs, with the key a unique identifier labeling the region type, and the value the path to the bedfile. if multiple `key: value` pairs are provided, they will all be used in turn as backgrounds for each of the requested comparisons. AY bedfiles might be specified here
+  - `stratification-regions`: intended to be the GIAB stratification regions, as described [here](https://github.com/genome-in-a-bottle/genome-stratifications). the remote directory will be mirrored locally with lftp. these entries are specified as:
+    - `ftp`: the ftp hosting site
+	- `dir`: the subdirectory of the ftp hosting site, through the genome build directory
 
 
 The following columns are expected in the experiment manifest, by default at `config/manifest_experiment.tsv`:
 - `experimental_dataset`: arbitrary, unique alias for this experimental dataset
+- `replicate`: identifier linking experimental subjects representing the same underlying sample and conditions. this identifier will be used to collapse multiple subjects into single mean/SE estimates in the downstream report, if multiple subjects with the same identifier are included in the same report
 - `vcf`: path to experimental dataset vcf
 
 The following columns are expected in the reference manifest, by default at `config/manifest_reference.tsv`:
@@ -44,6 +50,7 @@ The following columns are expected in the reference manifest, by default at `con
 The following columns are expected in the comparisons manifest, by default at `config/manifest_comparisons.tsv`:
 - `experimental_dataset`: experimental dataset for this comparison, referenced by unique alias
 - `reference_dataset`: reference dataset for this comparison, referenced by unique alias
+- `report`: unique identifier labeling which report this comparison should be included in. multiple can be specified, in a comma-delimited list
 
 Note that the entries in individual columns of the comparisons manifest are not intended to be unique, so
 multiple comparisons involving the same file are expected.
