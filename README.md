@@ -92,7 +92,9 @@ the cookiecutter template [here](https://github.com/Snakemake-Profiles/sge).
 
 ### Step 5: Investigate results
 
-TBD. This will be expanded once it becomes clearer to me what the expectations of this pipeline truly are.
+After the completion of a run, there will be control validation reports, in html format, at `results/reports`.
+One report will exist per configured comparison, in `config/manifest_comparisons.tsv` column `report`.
+The contents of the report are not yet determined.
 
 ### Step 6: Commit changes
 
