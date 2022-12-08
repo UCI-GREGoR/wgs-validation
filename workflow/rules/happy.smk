@@ -12,10 +12,12 @@ rule happy_run:
         fai="results/{}/ref.fasta.fai".format(reference_build),
         sdf="results/{}/ref.fasta.sdf".format(reference_build),
         bed=lambda wildcards: tc.get_happy_region_by_index(wildcards, config, checkpoints),
+        rtg_wrapper="workflow/scripts/rtg.bash",
     output:
         vcf="results/happy/{experimental}/{reference}/{region_set}/results.vcf.gz",
     params:
         outprefix="results/happy/{experimental}/{reference}/{region_set}/results",
+        tmpdir="temp/happy/{experimental}/{reference}/{region_set}",
     benchmark:
         "results/performance_benchmarks/happy_run/{experimental}/{reference}/{region_set}/results.tsv"
     conda:
@@ -24,10 +26,14 @@ rule happy_run:
     resources:
         qname="small",
         mem_mb="64000",
+        tmpdir=lambda wildcards: "temp/happy/{}/{}/{}".format(
+            wildcards.experimental, wildcards.reference, wildcards.region_set
+        ),
     shell:
+        "mkdir -p {params.tmpdir} && "
         "RTG_MEM=12G HGREF={input.fa} hap.py {input.reference} {input.experimental} -f {input.bed} -o {params.outprefix} "
-        "-V --engine=vcfeval --engine-vcfeval-path=${{CONDA_PREFIX}}/bin/rtg --engine-vcfeval-template={input.fa} "
-        "--threads {threads}"
+        "-V --engine=vcfeval --engine-vcfeval-path={input.rtg_wrapper} --engine-vcfeval-template={input.sdf} "
+        "--threads {threads} --scratch-prefix {params.tmpdir}"
 
 
 rule happy_combine_results:
