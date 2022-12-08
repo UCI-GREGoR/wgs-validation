@@ -1,0 +1,52 @@
+---
+title: "Control Validation Report"
+output:
+  html_document:
+    code_folding: hide
+    md_extensions: "-fancy_lists -emoji"
+  highlight: tango
+  number_sections: no
+  theme: default
+  toc: yes
+  toc_depth: 3
+  toc_float:
+    collapsed: no
+    smooth_scroll: yes
+---
+
+```{r link.variables, eval=TRUE, echo=FALSE}
+#### Link input parameters to local variables
+csvs <- snakemake@input[["csv"]]
+source.file <- snakemake@input[["r_resources"]]
+manifest.experiment <- snakemake@params[["manifest_experiment"]]
+manifest.reference <- snakemake@params[["manifest_reference"]]
+```
+
+```{r load.packages, eval=TRUE, echo=FALSE}
+#### Load required R packages
+suppressPackageStartupMessages(library(ggplot2, quietly = TRUE))
+suppressPackageStartupMessages(library(RColorBrewer, quietly = TRUE))
+suppressPackageStartupMessages(library(knitr, quietly = TRUE))
+suppressPackageStartupMessages(library(kableExtra, quietly = TRUE))
+```
+
+***
+<br>
+
+```{r load.source, eval=TRUE, echo=FALSE}
+#### Load source functions in separate, testable file
+source(source.file)
+```
+
+***
+<br>
+
+#### Session Information
+
+<br>
+
+The following summarizes the loaded R configuration for the run that created this report.
+
+```{r session.info, eval=TRUE, echo=TRUE}
+sessionInfo()
+```
