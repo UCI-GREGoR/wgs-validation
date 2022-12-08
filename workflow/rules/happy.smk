@@ -71,7 +71,9 @@ rule happy_add_region_name:
         name=lambda wildcards: tc.get_happy_region_name_by_index(wildcards, config, checkpoints),
     threads: 1
     shell:
-        'cat {input} | awk -v prefix={params.name} \'NR == 1 {{print "Region,"$0}} ; NR > 1 {{print prefix","$0}}\' > {output}'
+        "cat {input} | "
+        "awk -v prefix={params.name} -v exp={wildcards.experimental} -v ref={wildcards.reference} "
+        '\'NR == 1 {{print "Experimental,Reference,Region,"$0}} ; NR > 1 {{print exp","ref","prefix","$0}}\' > {output}'
 
 
 rule happy_combine_results:
@@ -91,4 +93,4 @@ rule happy_combine_results:
         "../envs/bcftools.yaml"
     threads: 1
     shell:
-        "cat {input} | awk 'NR == 1 || ! /^Region,Type,Filter,TRUTH.TOTAL/' > {output}"
+        "cat {input} | awk 'NR == 1 || ! /^Experimental,Reference,Region,Type,Filter,TRUTH.TOTAL/' > {output}"
