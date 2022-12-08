@@ -4,13 +4,13 @@ rule control_validation_report:
     from either hap.py or vcfeval
     """
     input:
-        lambda wildcards: tc.get_happy_output_files(config, manifest_comparisons),
+        lambda wildcards: tc.get_happy_output_files(wildcards, manifest_comparisons),
     output:
-        "results/reports/control_validation.html",
+        "results/reports/control_validation_{comparison}.html",
     params:
         r_resources="../scripts/control_validation.R",
     benchmark:
-        "results/performance_benchmarks/reports/control_validation.html"
+        "results/performance_benchmarks/reports/control_validation_{comparison}.tsv"
     conda:
         "../envs/r.yaml"
     threads: 1

@@ -26,7 +26,7 @@ def wrap_remote_file(fn: str) -> str | AnnotatedString:
 
 
 def get_happy_output_files(
-    config: dict,
+    wildcards,
     manifest_comparisons: pd.DataFrame,
 ) -> list:
     """
@@ -37,24 +37,24 @@ def get_happy_output_files(
     two columns *should* exist as indices in the corresponding other manifests.
     """
     res = []
-    for reference, experimental in zip(
-        manifest_comparisons["reference_dataset"], manifest_comparisons["experimental_dataset"]
+    for reference, experimental, report in zip(
+        manifest_comparisons["reference_dataset"],
+        manifest_comparisons["experimental_dataset"],
+        manifest_comparisons["report"],
     ):
-        res.append("results/happy/{}/{}/results.vcf.gz".format(experimental, reference))
+        if wildcards.comparison in report.split(","):
+            res.append("results/happy/{}/{}/results.vcf.gz".format(experimental, reference))
     return res
 
 
-def construct_targets(config: dict, manifest: pd.DataFrame) -> list:
+def construct_targets(manifest: pd.DataFrame) -> list:
     """
-    Use configuration and manifest data to generate the set of comparisons
+    Use comparison manifest data to generate the set of comparisons
     required for a full pipeline run.
     """
-    res = []
-    targets = zip(manifest["experimental_dataset"], manifest["reference_datasets"])
-    for target in targets:
-        reference_datasets = target[1].split(",")
-        for reference_dataset in reference_datasets:
-            res.append("results/vcfeval/{}/{}/results.vcf.gz".format(target[0], reference_dataset))
+    targets = [x.split(",") for x in manifest["report"]]
+    targets = [x for y in targets for x in y]
+    res = ["results/reports/control_validation_{}.html".format(x) for x in targets]
     return res
 
 
