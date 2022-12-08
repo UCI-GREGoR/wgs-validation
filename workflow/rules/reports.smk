@@ -5,7 +5,7 @@ rule control_validation_report:
     """
     input:
         csv=lambda wildcards: tc.get_happy_output_files(wildcards, manifest_comparisons),
-        r_resources="../scripts/control_validation.R",
+        r_resources="workflow/scripts/control_validation.R",
     output:
         "results/reports/control_validation_{comparison}.html",
     params:
