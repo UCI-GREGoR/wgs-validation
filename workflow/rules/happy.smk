@@ -4,6 +4,8 @@ rule happy_run:
 
     hap.py is a chunky memory hog. Nevertheless, it does do exactly what you want it
     to, after a fashion.
+
+    Eventually, most of these output files will be temp() or merged into single outputs.
     """
     input:
         experimental="results/experimentals/{experimental}.vcf.gz",
@@ -14,7 +16,22 @@ rule happy_run:
         bed=lambda wildcards: tc.get_happy_region_by_index(wildcards, config, checkpoints),
         rtg_wrapper="workflow/scripts/rtg.bash",
     output:
-        vcf="results/happy/{experimental}/{reference}/{region_set}/results.vcf.gz",
+        expand(
+            "results/happy/{{experimental}}/{{reference}}/{{region_set}}/results.{suffix}",
+            suffix=[
+                "extended.csv",
+                "metrics.json.gz",
+                "roc.all.csv.gz",
+                "roc.Locations.INDEL.csv.gz",
+                "roc.Locations.INDEL.PASS.csv.gz",
+                "roc.Locations.SNP.csv.gz",
+                "roc.Locations.SNP.PASS.csv.gz",
+                "runinfo.json",
+                "summary.csv",
+                "vcf.gz",
+                "vcf.gz.tbi",
+            ],
+        ),
     params:
         outprefix="results/happy/{experimental}/{reference}/{region_set}/results",
         tmpdir="temp/happy/{experimental}/{reference}/{region_set}",
@@ -36,24 +53,42 @@ rule happy_run:
         "--threads {threads} --scratch-prefix {params.tmpdir}"
 
 
+localrules:
+    happy_add_region_name,
+    happy_combine_results,
+
+
+rule happy_add_region_name:
+    """
+    To prepare for merging files from separate regions, prefix the lines
+    with the name of the region.
+    """
+    input:
+        "results/happy/{experimental}/{reference}/{region_set}/results.summary.csv",
+    output:
+        temp("results/happy/{experimental}/{reference}/{region_set}/results.summary.annotated.csv"),
+    params:
+        name=lambda wildcards: tc.get_happy_region_name_by_index(wildcards, config, checkpoints),
+    threads: 1
+    shell:
+        'cat {input} | awk -v prefix={params.name} \'NR == 1 {{print "Region,"$0}} ; NR > 1 {{print prefix","$0}}\' > {output}'
+
+
 rule happy_combine_results:
     """
-    Combine results from Illumina's hap.py utility run against different sets of stratification regions.
+    Combine annotated summary results from Illumina's hap.py utility run against different sets of stratification regions.
     """
     input:
         lambda wildcards: expand(
-            "results/happy/{{experimental}}/{{reference}}/{region_set}/results.vcf.gz",
+            "results/happy/{{experimental}}/{{reference}}/{region_set}/results.summary.annotated.csv",
             region_set=tc.get_happy_region_set_indices(wildcards, config, checkpoints),
         ),
     output:
-        "results/happy/{experimental}/{reference}/results.vcf.gz",
+        "results/happy/{experimental}/{reference}/results.summary.csv",
     benchmark:
         "results/performance_benchmarks/happy_combine_results/{experimental}/{reference}/results.tsv"
     conda:
         "../envs/bcftools.yaml"
-    threads: 2
-    resources:
-        qname="small",
-        mem_mb="4000",
+    threads: 1
     shell:
-        "touch {output}"
+        "cat {input} | awk 'NR == 1 || ! /^Region,Type,Filter,TRUTH.TOTAL/' > {output}"

@@ -43,7 +43,7 @@ def get_happy_output_files(
         manifest_comparisons["report"],
     ):
         if wildcards.comparison in report.split(","):
-            res.append("results/happy/{}/{}/results.vcf.gz".format(experimental, reference))
+            res.append("results/happy/{}/{}/results.summary.csv".format(experimental, reference))
     return res
 
 
@@ -116,3 +116,17 @@ def get_happy_region_set_indices(wildcards, config, checkpoints):
     ) as f:
         regions = f.readlines()
     return [x for x in range(len(regions))]
+
+
+def get_happy_region_name_by_index(wildcards, config, checkpoints) -> str:
+    """
+    Given an index corresponding to a bedfile name, return the pretty print label for the bedfile.
+    """
+    index = int(wildcards.region_set)
+    regions = []
+    with open(
+        checkpoints.get_stratification_bedfiles.get(genome_build=config["genome-build"]).output[0],
+        "r",
+    ) as f:
+        regions = f.readlines()
+    return regions[index].split("\t")[0]
