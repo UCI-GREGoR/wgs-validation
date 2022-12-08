@@ -80,7 +80,7 @@ def map_reference_file(wildcards: Namedlist, manifest: pd.DataFrame) -> str | An
     ## There have been periodic issues with the remote provider interface, but it seems
     ## to be working, somewhat inefficiently but very conveniently, for the time being.
     mapped_name = manifest.loc[wildcards.reference, "vcf"]
-    return wrap_remote_file(mapped_name)
+    return mapped_name
 
 
 def map_experimental_file(wildcards: Namedlist, manifest: pd.DataFrame) -> str | AnnotatedString:
@@ -95,7 +95,7 @@ def map_experimental_file(wildcards: Namedlist, manifest: pd.DataFrame) -> str |
     ## There have been periodic issues with the remote provider interface, but it seems
     ## to be working, somewhat inefficiently but very conveniently, for the time being.
     mapped_name = manifest.loc[wildcards.experimental, "vcf"]
-    return wrap_remote_file(mapped_name)
+    return mapped_name
 
 
 def get_happy_stratification_by_index(wildcards, config, checkpoints):
