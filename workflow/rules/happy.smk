@@ -72,8 +72,8 @@ rule happy_add_region_name:
     threads: 1
     shell:
         "cat {input} | "
-        "awk -v prefix={params.name} -v exp={wildcards.experimental} -v ref={wildcards.reference} "
-        '\'NR == 1 {{print "Experimental,Reference,Region,"$0}} ; NR > 1 {{print exp","ref","prefix","$0}}\' > {output}'
+        "awk -v prefix={params.name} -v ex={wildcards.experimental} -v ref={wildcards.reference} "
+        '\'NR == 1 {{print "Experimental,Reference,Region,"$0}} ; NR > 1 {{print ex","ref","prefix","$0}}\' > {output}'
 
 
 rule happy_combine_results:
