@@ -7,7 +7,11 @@ properties:
   reference_dataset:
     type: string
     description: "unique identifier of reference manifest entry to use for comparison"
+  report:
+    type: string
+    description: "which Rmd report(s) this comparison should be included in"
 required:
   - experimental_dataset
   - reference_dataset
+  - report
 additionalProperties: no

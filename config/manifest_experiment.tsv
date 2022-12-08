@@ -1,2 +1,2 @@
-experimental_dataset	vcf
-test_NA12878	octopus.vcf.gz
+experimental_dataset	replicate	vcf
+test_NA12878	NA12878	octopus.vcf.gz
