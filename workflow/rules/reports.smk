@@ -4,11 +4,13 @@ rule control_validation_report:
     from either hap.py or vcfeval
     """
     input:
-        lambda wildcards: tc.get_happy_output_files(wildcards, manifest_comparisons),
+        csv=lambda wildcards: tc.get_happy_output_files(wildcards, manifest_comparisons),
+        r_resources="../scripts/control_validation.R",
     output:
         "results/reports/control_validation_{comparison}.html",
     params:
-        r_resources="../scripts/control_validation.R",
+        manifest_experiment=manifest_experiment,
+        manifest_reference=manifest_reference,
     benchmark:
         "results/performance_benchmarks/reports/control_validation_{comparison}.tsv"
     conda:
