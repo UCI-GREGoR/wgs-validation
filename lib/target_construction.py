@@ -111,7 +111,7 @@ def get_happy_stratification_by_index(wildcards, config, checkpoints):
     ) as f:
         regions = f.readlines()
     lines = [
-        regions[i]
+        regions[i].replace("\t", "\t../../")
         for i in range(
             int(wildcards.stratification_set) * beds_per_set,
             min((int(wildcards.stratification_set) + 1) * beds_per_set, len(regions)),

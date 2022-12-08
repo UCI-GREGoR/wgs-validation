@@ -10,7 +10,7 @@ rule happy_create_stratification_subset:
     input:
         "results/stratification-sets/{genome_build}/stratification_regions.tsv",
     output:
-        "results/stratification-sets/{genome_build}/{stratification_set}/stratification_subset.tsv",
+        "results/stratification-sets/{genome_build}/subsets_for_happy/{stratification_set}/stratification_subset.tsv",
     params:
         contents=lambda wildcards: tc.get_happy_stratification_by_index(
             wildcards, config, checkpoints
@@ -35,7 +35,7 @@ rule happy_run:
         fa="results/{}/ref.fasta".format(reference_build),
         fai="results/{}/ref.fasta.fai".format(reference_build),
         sdf="results/{}/ref.fasta.sdf".format(reference_build),
-        stratification="results/stratification-sets/{}/{{stratification_set}}/stratification_subset.tsv".format(
+        stratification="results/stratification-sets/{}/subsets_for_happy/{{stratification_set}}/stratification_subset.tsv".format(
             reference_build
         ),
         bed="results/confident-regions/{region}.bed",
