@@ -8,7 +8,7 @@ checkpoint get_stratification_bedfiles:
     the relative path to the bedfile needs to be placed in a place that Snakemake can see it.
     """
     output:
-        "results/regions/{genome_build}/stratification_regions.tsv",
+        "results/stratification-sets/{genome_build}/stratification_regions.tsv",
     params:
         outdir="results/regions/{genome_build}",
         ftpsite=lambda wildcards: config["genomes"][wildcards.genome_build][
@@ -32,6 +32,24 @@ checkpoint get_stratification_bedfiles:
         "mirror --verbose -p --exclude-glob .DS_Store {params.ftpdir} {params.outdir}' && "
         'find {params.outdir} -maxdepth 1 -name "*-all-stratifications.tsv" -exec '
         "cp {{}} {output} \\;"
+
+
+rule acquire_confident_regions:
+    """
+    Get a confident region bedfile from somewhere
+    """
+    input:
+        lambda wildcards: tc.wrap_remote_file(
+            config["genomes"][reference_build]["confident-regions"][wildcards.region]
+        ),
+    output:
+        "results/confident-regions/{region}.bed",
+    threads: 1
+    resources:
+        qname="small",
+        mem_mb="2000",
+    shell:
+        "cp {input} {output}"
 
 
 rule acquire_fasta:

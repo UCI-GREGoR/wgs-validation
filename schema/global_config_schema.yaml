@@ -7,6 +7,9 @@ properties:
     type: string
   comparisons-manifest:
     type: string
+  happy-bedfiles-per-stratification:
+    type: integer
+    min: 1
   genome-build:
     type: string
     pattern: "^grch[0-9]+$"
@@ -18,6 +21,11 @@ properties:
         properties:
           fasta:
             type: string
+          confident-regions:
+            type: object
+            patternProperties:
+              "^.*$":
+                type: string
           stratification-regions:
             type: object
             properties:
@@ -31,12 +39,14 @@ properties:
             additionalProperties: no
         required:
           - fasta
+          - confident-regions
           - stratification-regions
         additionalProperties: no
 required:
   - experiment-manifest
   - reference-manifest
   - comparisons-manifest
+  - happy-bedfiles-per-stratification
   - genome-build
   - genomes
 additionalProperties: no

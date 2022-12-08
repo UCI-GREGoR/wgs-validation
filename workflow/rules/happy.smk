@@ -1,3 +1,25 @@
+localrules:
+    happy_create_stratification_subset,
+
+
+rule happy_create_stratification_subset:
+    """
+    Create a file containing a subset of the input stratification files,
+    to address the fact that hap.py is a giant resource hog.
+    """
+    input:
+        "results/stratification-sets/{genome_build}/stratification_regions.tsv",
+    output:
+        "results/stratification-sets/{genome_build}/{stratification_set}/stratification_subset.tsv",
+    params:
+        contents=lambda wildcards: tc.get_happy_stratification_by_index(
+            wildcards, config, checkpoints
+        ),
+    threads: 1
+    shell:
+        "echo \"{params.contents}\" | sed 's/\\r//g' > {output}"
+
+
 rule happy_run:
     """
     Use Illumina's hap.py to compare "gold standard" vcf to experimental calls.
@@ -13,11 +35,14 @@ rule happy_run:
         fa="results/{}/ref.fasta".format(reference_build),
         fai="results/{}/ref.fasta.fai".format(reference_build),
         sdf="results/{}/ref.fasta.sdf".format(reference_build),
-        bed=lambda wildcards: tc.get_happy_region_by_index(wildcards, config, checkpoints),
+        stratification="results/stratification-sets/{}/{{stratification_set}}/stratification_subset.tsv".format(
+            reference_build
+        ),
+        bed="results/confident-regions/{region}.bed",
         rtg_wrapper="workflow/scripts/rtg.bash",
     output:
         expand(
-            "results/happy/{{experimental}}/{{reference}}/{{region_set}}/results.{suffix}",
+            "results/happy/{{experimental}}/{{reference}}/{{region}}/{{stratification_set}}/results.{suffix}",
             suffix=[
                 "extended.csv",
                 "metrics.json.gz",
@@ -33,22 +58,26 @@ rule happy_run:
             ],
         ),
     params:
-        outprefix="results/happy/{experimental}/{reference}/{region_set}/results",
-        tmpdir="temp/happy/{experimental}/{reference}/{region_set}",
+        outprefix="results/happy/{experimental}/{reference}/{region}/{stratification_set}/results",
+        tmpdir="temp/happy/{experimental}/{reference}/{region}/{stratification_set}",
     benchmark:
-        "results/performance_benchmarks/happy_run/{experimental}/{reference}/{region_set}/results.tsv"
+        "results/performance_benchmarks/happy_run/{experimental}/{reference}/{region}/{stratification_set}/results.tsv"
     conda:
         "../envs/happy.yaml"
     threads: 4
     resources:
         qname="small",
         mem_mb="64000",
-        tmpdir=lambda wildcards: "temp/happy/{}/{}/{}".format(
-            wildcards.experimental, wildcards.reference, wildcards.region_set
+        tmpdir=lambda wildcards: "temp/happy/{}/{}/{}/{}".format(
+            wildcards.experimental,
+            wildcards.reference,
+            wildcards.region,
+            wildcards.stratification_set,
         ),
     shell:
         "mkdir -p {params.tmpdir} && "
         "RTG_MEM=12G HGREF={input.fa} hap.py {input.reference} {input.experimental} -f {input.bed} -o {params.outprefix} "
+        "--stratification {input.stratification} "
         "-V --engine=vcfeval --engine-vcfeval-path={input.rtg_wrapper} --engine-vcfeval-template={input.sdf} "
         "--threads {threads} --scratch-prefix {params.tmpdir}"
 
@@ -64,16 +93,16 @@ rule happy_add_region_name:
     with the name of the region.
     """
     input:
-        "results/happy/{experimental}/{reference}/{region_set}/results.summary.csv",
+        "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.summary.csv",
     output:
-        temp("results/happy/{experimental}/{reference}/{region_set}/results.summary.annotated.csv"),
-    params:
-        name=lambda wildcards: tc.get_happy_region_name_by_index(wildcards, config, checkpoints),
+        temp(
+            "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.summary.annotated.csv"
+        ),
     threads: 1
     shell:
         "cat {input} | "
-        "awk -v prefix={params.name} -v ex={wildcards.experimental} -v ref={wildcards.reference} "
-        '\'NR == 1 {{print "Experimental,Reference,Region,"$0}} ; NR > 1 {{print ex","ref","prefix","$0}}\' > {output}'
+        "awk -v ex={wildcards.experimental} -v ref={wildcards.reference} -v reg={wildcards.region} "
+        '\'NR == 1 {{print "Experimental,Reference,Region,"$0}} ; NR > 1 {{print ex","ref","reg","$0}}\' > {output}'
 
 
 rule happy_combine_results:
@@ -82,13 +111,15 @@ rule happy_combine_results:
     """
     input:
         lambda wildcards: expand(
-            "results/happy/{{experimental}}/{{reference}}/{region_set}/results.summary.annotated.csv",
-            region_set=tc.get_happy_region_set_indices(wildcards, config, checkpoints),
+            "results/happy/{{experimental}}/{{reference}}/{{region}}/{stratification_set}/results.summary.annotated.csv",
+            stratification_set=tc.get_happy_stratification_set_indices(
+                wildcards, config, checkpoints
+            ),
         ),
     output:
-        "results/happy/{experimental}/{reference}/results.summary.csv",
+        "results/happy/{experimental}/{reference}/{region}/results.summary.csv",
     benchmark:
-        "results/performance_benchmarks/happy_combine_results/{experimental}/{reference}/results.tsv"
+        "results/performance_benchmarks/happy_combine_results/{experimental}/{reference}/{region}/results.tsv"
     conda:
         "../envs/bcftools.yaml"
     threads: 1

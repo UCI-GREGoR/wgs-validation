@@ -7,12 +7,12 @@ rule control_validation_report:
         csv=lambda wildcards: tc.get_happy_output_files(wildcards, manifest_comparisons),
         r_resources="workflow/scripts/control_validation.R",
     output:
-        "results/reports/control_validation_{comparison}.html",
+        "results/reports/control_validation_comparison-{comparison}_vs_region-{region}.html",
     params:
         manifest_experiment=manifest_experiment,
         manifest_reference=manifest_reference,
     benchmark:
-        "results/performance_benchmarks/reports/control_validation_{comparison}.tsv"
+        "results/performance_benchmarks/reports/control_validation_comparison-{comparison}_vs_region-{region}.tsv"
     conda:
         "../envs/r.yaml"
     threads: 1

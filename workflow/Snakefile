@@ -41,7 +41,7 @@ validate(manifest_reference, "../schema/reference_manifest_schema.yaml")
 validate(manifest_comparisons, "../schema/comparisons_manifest_schema.yaml")
 
 
-TARGETS = (tc.construct_targets(manifest_comparisons),)
+TARGETS = (tc.construct_targets(config, manifest_comparisons),)
 
 
 rule all:

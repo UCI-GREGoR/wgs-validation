@@ -10,6 +10,7 @@ rule download_reference_data:
     resources:
         qname="small",
         mem_mb="1000",
+        disk_mb="8000",
     shell:
         "cp {input} {output}"
 

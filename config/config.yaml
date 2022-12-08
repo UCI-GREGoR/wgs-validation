@@ -10,14 +10,17 @@ experiment-manifest: "config/manifest_experiment.tsv"
 ## the GIAB links were extracted from the Octopus publication, supplemental note 1, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7611855/#SD1
 reference-manifest: "config/manifest_reference.tsv"
 comparisons-manifest: "config/manifest_comparisons.tsv"
-
-
+happy-bedfiles-per-stratification: 3
 genome-build: "grch37"
 
 ## Stratification regions are suggested for use with hap.py style analysis. All thanks to Justin Zook lol
 genomes:
   grch37:
     fasta: "s3://invitae-health-chameleon-dev/reference_data/grch37/human_g1k_v37_modified/human_g1k_v37_modified.fasta"
+    confident-regions:
+      AY52: "/locus/data/assays/AY52/targets/v1/annotated_targets.bed"
+      AY85: "/locus/data/assays/AY85/targets/v1/annotated_targets.bed"
+      all: "resources/grch37.bed"
     stratification-regions:
       ftp: "ftp-trace.ncbi.nlm.nih.gov"
       dir: "ReferenceSamples/giab/release/genome-stratifications/v3.1/GRCh37"
