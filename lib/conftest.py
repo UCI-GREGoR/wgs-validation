@@ -42,6 +42,7 @@ def manifest_experiment():
     """
     res = pd.DataFrame(
         {
+            "happy-bedfiles-for-stratification": 3,
             "experimental_dataset": ["exp1", "exp2", "exp3"],
             "replicate": ["rep1", "rep1", "rep2"],
             "vcf": ["dummy/path1.vcf.gz", "dummy/path2.vcf.gz", "path/to/exp_filename.vcf.gz"],
