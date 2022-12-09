@@ -95,6 +95,24 @@ def test_construct_targets(config, manifest_comparisons):
     ]
     expected.sort()
     observed = tc.construct_targets(config, manifest_comparisons)
-    print(expected)
-    print(observed)
+    assert observed == expected
+
+
+def test_map_reference_file(wildcards_comparison, manifest_reference):
+    """
+    Test that map reference file can pull out a vcf by unique identifier from
+    the reference dataset manifest
+    """
+    expected = "path/to/ref_filename.vcf.gz"
+    observed = tc.map_reference_file(wildcards_comparison, manifest_reference)
+    assert observed == expected
+
+
+def test_map_experimental_file(wildcards_comparison, manifest_experiment):
+    """
+    Test that map experimental file can pull out a vcf by unique identifier from
+    the experiment dataset manifest
+    """
+    expected = "path/to/exp_filename.vcf.gz"
+    observed = tc.map_experimental_file(wildcards_comparison, manifest_experiment)
     assert observed == expected
