@@ -4,6 +4,21 @@ from snakemake.io import Namedlist
 
 
 @pytest.fixture
+def config():
+    """
+    dict containing configuration data for run
+    """
+    res = {
+        "genome-build": "grch100",
+        "genomes": {
+            "grch99": {"confident-regions": {"reg1": "file1", "reg2": "file2"}},
+            "grch100": {"confident-regions": {"reg3": "file3", "reg4": "file4"}},
+        },
+    }
+    return res
+
+
+@pytest.fixture
 def manifest_comparisons():
     """
     pandas DataFrame of configured requested comparisons

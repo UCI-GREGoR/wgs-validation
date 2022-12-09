@@ -79,6 +79,22 @@ def test_get_happy_output_files(wildcards_for_report, manifest_comparisons):
         "results/happy/exp1/ref2/back1/results.extended.csv",
     ]
     observed = tc.get_happy_output_files(wildcards_for_report, manifest_comparisons)
+    assert observed == expected
+
+
+def test_construct_targets(config, manifest_comparisons):
+    """
+    Test that construct_targets successfully populates all final reports
+    """
+    expected = [
+        "results/reports/control_validation_comparison-{}_vs_region-{}.html".format(x[0], x[1])
+        for x in zip(
+            ["comp1", "comp2", "comp3", "comp1", "comp2", "comp3"],
+            ["reg3", "reg3", "reg3", "reg4", "reg4", "reg4"],
+        )
+    ]
+    expected.sort()
+    observed = tc.construct_targets(config, manifest_comparisons)
     print(expected)
     print(observed)
     assert observed == expected

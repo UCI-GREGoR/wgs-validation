@@ -65,6 +65,8 @@ def construct_targets(config, manifest: pd.DataFrame) -> list:
         comparison=comparisons,
         region=regions,
     )
+    res = list(set(res))
+    res.sort()
     return res
 
 
