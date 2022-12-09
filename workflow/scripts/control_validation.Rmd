@@ -38,6 +38,22 @@ suppressPackageStartupMessages(library(kableExtra, quietly = TRUE))
 source(source.file)
 ```
 
+```{r aggregate.input.data, eval=TRUE, echo=FALSE}
+#### Combine input csvs into a single tidy data frame
+plot.data <- load.files(csvs)
+```
+
+```{r report.toplevel.table, eval=TRUE, echo=FALSE, results="asis"}
+#### Generate simple top-level data for certain straightforward classes
+## what data do we want for such a thing? the original report format
+## contains a table:
+##  - rows are samples (combined by replicate)
+##  - columns are SNV(sens, spec), Del<=50(sens, spec), Ins<=50(sens, spec)
+##  - 95% CIs when "greater than three replicates" are included
+## at the very least, F1 should be included, though without CIs.
+##
+```
+
 ***
 <br>
 
