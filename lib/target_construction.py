@@ -45,7 +45,7 @@ def get_happy_output_files(
     ):
         if wildcards.comparison in report.split(","):
             res.append(
-                "results/happy/{}/{}/{}/results.summary.csv".format(
+                "results/happy/{}/{}/{}/results.extended.csv".format(
                     experimental, reference, wildcards.region
                 )
             )

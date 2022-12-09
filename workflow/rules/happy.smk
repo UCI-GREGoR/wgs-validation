@@ -93,10 +93,10 @@ rule happy_add_region_name:
     with the name of the region.
     """
     input:
-        "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.summary.csv",
+        "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
     output:
         temp(
-            "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.summary.annotated.csv"
+            "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.extended.annotated.csv"
         ),
     threads: 1
     shell:
@@ -111,17 +111,17 @@ rule happy_combine_results:
     """
     input:
         lambda wildcards: expand(
-            "results/happy/{{experimental}}/{{reference}}/{{region}}/{stratification_set}/results.summary.annotated.csv",
+            "results/happy/{{experimental}}/{{reference}}/{{region}}/{stratification_set}/results.extended.annotated.csv",
             stratification_set=tc.get_happy_stratification_set_indices(
                 wildcards, config, checkpoints
             ),
         ),
     output:
-        "results/happy/{experimental}/{reference}/{region}/results.summary.csv",
+        "results/happy/{experimental}/{reference}/{region}/results.extended.csv",
     benchmark:
         "results/performance_benchmarks/happy_combine_results/{experimental}/{reference}/{region}/results.tsv"
     conda:
         "../envs/bcftools.yaml"
     threads: 1
     shell:
-        "cat {input} | awk 'NR == 1 || ! /^Experimental,Reference,Region,Type,Filter,TRUTH.TOTAL/' > {output}"
+        "cat {input} | awk 'NR == 1 || ! /^Experimental,Reference,Region,Type,Subtype,Subset,Filter,TRUTH.TOTAL/' > {output}"
