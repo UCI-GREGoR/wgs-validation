@@ -1,3 +1,13 @@
+#' Set common ggplot2 theme data for plots
+my.theme <- theme_light() + theme(
+  plot.title = element_text(size = 16, hjust = 0.5),
+  axis.title = element_text(size = 14),
+  axis.text = element_text(size = 12),
+  strip.background = element_blank(),
+  strip.text = element_text(size = 14, colour = "black")
+)
+
+
 #' For a single input csv file, load the data,
 #' and adjust its format into a tidy format for plotting.
 #'
@@ -24,6 +34,7 @@ load.single.file <- function(csv.file) {
       levels = c("Precision", "Recall", "F1")
     )
   )
+  plot.data$Metric <- as.numeric(plot.data$Metric)
   plot.data
 }
 
@@ -49,6 +60,57 @@ load.files <- function(csv.files) {
   ## it emits a file, so when running stratification regions and
   ## using the extended csvs, you end up with the exact same thing
   ## represented over and over
-  df <- df[!duplicated(df[, 1:5]), ]
+  res <- res[!duplicated(res[, c(1:5, 7)]), ]
   res
+}
+
+
+#' Add name/label pairs as a named vector for downstream iteration
+#'
+#' @param stratifications list; flattened configuration input
+#' from snakemake describing name/label pairs
+#' @return named character vector; somewhat confusingly, input names are
+#' values in return vector, while input labels are names in return vector
+construct.targets <- function(stratifications) {
+  res <- c()
+  res.names <- c()
+  for (i in seq(1, length(stratifications), 2)) {
+    res <- c(res, strwrap(stratifications[[i]]))
+    res.names <- c(res.names, stratifications[[i + 1]])
+  }
+  names(res) <- res.names
+  res
+}
+
+#' Create a simple comparison plot. I'm not currently sure
+#' what this plot will look like.
+#'
+#' @param plot.data data frame of plotting data from post-processed
+#' hap.py data
+#' @param data.panels character vector, either SNP or INDEL or both
+#' @param data.subset character vector, name of bed region used to subset
+#' variants for this comparison. examples: "*", "TS_boundary", "refseq_cds".
+#' @param data.label character vector, human-legible label of region used
+#' to subset variants for this comparison. examples: "All available variants",
+#' "RefSeq coding sequence." defaults to NULL. if non-null, the name will
+#' be used as the title of the plot
+#' @return ggplot2 plot object
+make.plot <- function(plot.data, data.panels, data.subset, data.label = NULL) {
+  plot.data <- plot.data[plot.data$Type %in% data.panels & plot.data$Subset == data.subset, ]
+  subject.label <- paste(plot.data$Experimental, "vs\n", plot.data$Reference)
+  plot.data$Type <- factor(plot.data$Type, levels = data.panels)
+  plot.data[, "subject.label"] <- subject.label
+  my.plot <- ggplot(aes(x = Metric.Type, y = Metric, group = Type, colour = subject.label), data = plot.data)
+  my.plot <- my.plot + my.theme + geom_point()
+  my.plot <- my.plot + xlab("Evaluation Metric") + ylab("Metric Value")
+  my.plot <- my.plot + scale_colour_manual(
+    name = "Control",
+    values = brewer.pal(8, "Dark2")[seq_len(length(unique(subject.label)))]
+  )
+  my.plot <- my.plot + scale_y_continuous(limits = c(0, 1))
+  my.plot <- my.plot + facet_grid(cols = vars(Type))
+  if (!is.null(names(data.label))) {
+    my.plot <- my.plot + ggtitle(data.label)
+  }
+  my.plot
 }

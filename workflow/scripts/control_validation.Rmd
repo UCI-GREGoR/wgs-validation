@@ -20,6 +20,7 @@ csvs <- snakemake@input[["csv"]]
 source.file <- snakemake@input[["r_resources"]]
 manifest.experiment <- snakemake@params[["manifest_experiment"]]
 manifest.reference <- snakemake@params[["manifest_reference"]]
+selected.stratifications <- snakemake@params[["selected_stratifications"]]
 ```
 
 ```{r load.packages, eval=TRUE, echo=FALSE}
@@ -43,7 +44,17 @@ source(source.file)
 plot.data <- load.files(csvs)
 ```
 
-```{r report.toplevel.table, eval=TRUE, echo=FALSE, results="asis"}
+```{r construct.targets, eval=TRUE, echo=FALSE}
+#### Aggregate input stratification annotations in named vector
+targets <- construct.targets(selected.stratifications)
+```
+
+***
+<br>
+
+### Control Validation Data by Variant Annotation
+
+```{r report.toplevel.table, eval=TRUE, echo=FALSE, results="asis", fig.width=10}
 #### Generate simple top-level data for certain straightforward classes
 ## what data do we want for such a thing? the original report format
 ## contains a table:
@@ -52,6 +63,13 @@ plot.data <- load.files(csvs)
 ##  - 95% CIs when "greater than three replicates" are included
 ## at the very least, F1 should be included, though without CIs.
 ##
+# targets <- c("All available variants" = "*",
+#             "All difficult regions" = "alldifficultregions")
+for (i in seq_len(length(targets))) {
+  cat("\n\n####", names(targets)[i], "\n\n")
+  print(make.plot(plot.data, c("SNP", "INDEL"), targets[i]))
+  cat("\n\n***\n<br>\n\n")
+}
 ```
 
 ***

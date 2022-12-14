@@ -33,9 +33,23 @@ properties:
                 type: string
               dir:
                 type: string
+              region-definitions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    label:
+                      type: string
+                  required:
+                    - name
+                    - label
+                  additionalProperties: no
             required:
               - ftp
               - dir
+              - region-definitions
             additionalProperties: no
         required:
           - fasta

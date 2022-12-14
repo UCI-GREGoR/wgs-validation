@@ -11,6 +11,9 @@ rule control_validation_report:
     params:
         manifest_experiment=manifest_experiment,
         manifest_reference=manifest_reference,
+        selected_stratifications=config["genomes"][reference_build]["stratification-regions"][
+            "region-definitions"
+        ],
     benchmark:
         "results/performance_benchmarks/reports/control_validation_comparison-{comparison}_vs_region-{region}.tsv"
     conda:
