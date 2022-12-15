@@ -128,6 +128,7 @@ make.table <- function(plot.data, targets) {
   indels.all <- plot.data[plot.data$Type == "INDEL", ]
   snps.final <- data.frame()
   indels.final <- data.frame()
+  block.cutoffs <- c()
   for (i in seq_len(length(targets))) {
     snps <- snps.all[snps.all$Subset == targets[i], ]
     indels <- indels.all[indels.all$Subset == targets[i], ]
@@ -152,13 +153,23 @@ make.table <- function(plot.data, targets) {
       snps.final <- snps
       indels.final <- indels
     }
+    block.cutoffs <- c(block.cutoffs, nrow(snps.final))
   }
   ## truncate decimal precision, because come now
   res <- cbind(snps.final, indels.final[, 3:5])
   for (i in seq(3, ncol(res))) {
     res[, i] <- signif(res[, i], 4)
   }
-  knitr::kable(res) %>%
-    kableExtra::kable_styling("condensed", position = "left", full_width = FALSE) %>%
-    kableExtra::add_header_above(c("Comparison" = 2, "SNPs" = 3, "INDELs" = 3))
+  res <- knitr::kable(res) %>%
+    kableExtra::kable_styling("condensed", position = "left", full_width = FALSE)
+  ## add mid-table subheaders denoting different stratification sets
+  for (i in seq_len(length(targets))) {
+    res <- res %>% kableExtra::pack_rows(
+      names(targets)[i],
+      ifelse(i == 1, 1, block.cutoffs[i - 1] + 1),
+      block.cutoffs[i]
+    )
+  }
+  res <- res %>% kableExtra::add_header_above(c("Comparison" = 2, "SNPs" = 3, "INDELs" = 3))
+  res
 }
