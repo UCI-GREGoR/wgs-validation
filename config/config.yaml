@@ -19,6 +19,9 @@ genomes:
     fasta: "s3://invitae-health-chameleon-dev/reference_data/grch37/human_g1k_v37_modified/human_g1k_v37_modified.fasta"
     confident-regions:
       AY52: "/locus/data/assays/AY52/targets/v1/annotated_targets.bed"
+      archival_AY83: "/locus/data/external_data/research_experiments/ManualRuns/EX3636/b37/wgs_data/SQ42075_LS1545793_RE2698_F1/octopus_giab_AY83_eval_regions.bed"
+      archival_AY83_hc: "/locus/data/external_data/research_experiments/ManualRuns/EX3636/b37/wgs_data/SQ42075_LS1545793_RE2698_F1/octopus_giab_AY83_hc_eval_regions.bed"
+      archival_AY83_lc: "/locus/data/external_data/research_experiments/ManualRuns/EX3636/b37/wgs_data/SQ42075_LS1545793_RE2698_F1/octopus_giab_AY83_lc_eval_regions.bed"
       AY85: "/locus/data/assays/AY85/targets/v1/annotated_targets.bed"
       all: "resources/grch37.bed"
     stratification-regions:
