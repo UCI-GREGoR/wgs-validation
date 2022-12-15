@@ -54,7 +54,16 @@ targets <- construct.targets(selected.stratifications)
 
 ### Control Validation Data by Variant Annotation
 
-```{r report.toplevel.table, eval=TRUE, echo=FALSE, results="asis", fig.width=10}
+#### Tabular
+
+```{r report.table, eval=TRUE, echo=FALSE, results="asis"}
+my.table <- make.table(plot.data, targets)
+my.table
+```
+
+#### Plots
+
+```{r report.plots, eval=TRUE, echo=FALSE, results="asis", fig.width=10}
 #### Generate simple top-level data for certain straightforward classes
 ## what data do we want for such a thing? the original report format
 ## contains a table:
@@ -63,8 +72,6 @@ targets <- construct.targets(selected.stratifications)
 ##  - 95% CIs when "greater than three replicates" are included
 ## at the very least, F1 should be included, though without CIs.
 ##
-# targets <- c("All available variants" = "*",
-#             "All difficult regions" = "alldifficultregions")
 for (i in seq_len(length(targets))) {
   cat("\n\n####", names(targets)[i], "\n\n")
   print(make.plot(plot.data, c("SNP", "INDEL"), targets[i]))

@@ -114,3 +114,47 @@ make.plot <- function(plot.data, data.panels, data.subset, data.label = NULL) {
   }
   my.plot
 }
+
+#' Create a table of performance statistics
+#' based on requested target regions
+#'
+#' @param plot.data data frame of input data
+#' aggregated across hap.py csv output
+#' @param targets character vector; entries
+#' are "Subset", names are human-legible labels
+#' @return kable of report data
+make.table <- function(plot.data, targets) {
+  snps.all <- plot.data[plot.data$Type == "SNP", ]
+  indels.all <- plot.data[plot.data$Type == "INDEL", ]
+  snps.final <- data.frame()
+  indels.final <- data.frame()
+  for (i in seq_len(length(targets))) {
+    snps <- snps.all[snps.all$Subset == targets[i], ]
+    indels <- indels.all[indels.all$Subset == targets[i], ]
+    snps <- data.frame(
+      Experimental = snps[snps[, "Metric.Type"] == "Precision", "Experimental"],
+      Reference = snps[snps[, "Metric.Type"] == "Precision", "Reference"],
+      Precision = snps[snps[, "Metric.Type"] == "Precision", "Metric"],
+      Recall = snps[snps[, "Metric.Type"] == "Recall", "Metric"],
+      F1 = snps[snps[, "Metric.Type"] == "F1", "Metric"]
+    )
+    indels <- data.frame(
+      Experimental = indels[indels[, "Metric.Type"] == "Precision", "Experimental"],
+      Reference = indels[indels[, "Metric.Type"] == "Precision", "Reference"],
+      Precision = indels[indels[, "Metric.Type"] == "Precision", "Metric"],
+      Recall = indels[indels[, "Metric.Type"] == "Recall", "Metric"],
+      F1 = indels[indels[, "Metric.Type"] == "F1", "Metric"]
+    )
+    if (nrow(snps.final) > 0) {
+      snps.final <- rbind(snps.final, snps)
+      indels.final <- rbind(indels.final, indels)
+    } else {
+      snps.final <- snps
+      indels.final <- indels
+    }
+  }
+  res <- cbind(snps.final, indels.final[, 3:5])
+  knitr::kable(res) %>%
+    kableExtra::kable_styling("condensed", position = "left", full_width = FALSE) %>%
+    kableExtra::add_header_above(c("Comparison" = 2, "SNPs" = 3, "INDELs" = 3))
+}
