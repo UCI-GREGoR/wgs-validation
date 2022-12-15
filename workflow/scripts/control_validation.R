@@ -153,7 +153,11 @@ make.table <- function(plot.data, targets) {
       indels.final <- indels
     }
   }
+  ## truncate decimal precision, because come now
   res <- cbind(snps.final, indels.final[, 3:5])
+  for (i in seq(3, ncol(res))) {
+    res[, i] <- signif(res[, i], 4)
+  }
   knitr::kable(res) %>%
     kableExtra::kable_styling("condensed", position = "left", full_width = FALSE) %>%
     kableExtra::add_header_above(c("Comparison" = 2, "SNPs" = 3, "INDELs" = 3))
