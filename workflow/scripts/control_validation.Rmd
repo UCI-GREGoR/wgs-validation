@@ -52,16 +52,16 @@ targets <- construct.targets(selected.stratifications)
 ***
 <br>
 
-### Control Validation Data by Variant Annotation
+## Control Validation Results
 
-#### Tabular
+### Tabular, by Variant Annotation
 
 ```{r report.table, eval=TRUE, echo=FALSE, results="asis"}
 my.table <- make.table(plot.data, targets)
 my.table
 ```
 
-#### Plots
+### Graphical, by Variant Annotation
 
 ```{r report.plots, eval=TRUE, echo=FALSE, results="asis", fig.width=10}
 #### Generate simple top-level data for certain straightforward classes
@@ -82,7 +82,7 @@ for (i in seq_len(length(targets))) {
 ***
 <br>
 
-#### Session Information
+## Session Information
 
 <br>
 
