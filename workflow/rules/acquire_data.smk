@@ -21,7 +21,7 @@ rule download_reference_data:
         "aws s3 cp {input} {output} ; "
         "elif [[ {params} = ftp://* ]] || [[ {params} = https://* ]] || [[ {params} = http://* ]] ; then "
         "wget -O {output} {params} ; "
-        "else cp {input} {output} ; fi"
+        "else cp {params} {output} ; fi"
 
 
 use rule download_reference_data as download_experimental_data with:
