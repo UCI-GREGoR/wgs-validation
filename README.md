@@ -32,10 +32,16 @@ The following settings are recognized in `config/config.yaml`.
 - `genome-build`: desired genome reference build for the comparisons. referenced by aliases specified in `genomes` block
 - `genomes`: an arbitrary set of reference genome specifications. intended to be assigned tags such as `grch38`, `grch37`, etc. within each block:
   - `fasta`: path to genome fasta corresponding to this build. can be a path to a local file, or an http/ftp link, or an s3 path
-  - `confident-regions`: arbitrarily many bedfiles describing a confident background on which comparison should be evaluated. bedfiles are specified in `key: value` pairs, with the key a unique identifier labeling the region type, and the value the path to the bedfile. if multiple `key: value` pairs are provided, they will all be used in turn as backgrounds for each of the requested comparisons. AY bedfiles might be specified here
+  - `confident-regions`: arbitrarily many bedfiles describing a confident background on which comparison should be evaluated. the names under `confident-regions` are unique identifiers labeling the region type, and contain the following key/value pairs:
+	- `bed`: bed regions in which to compute calculations. AY regions or high-confidence GIAB bedfiles can be specified here
+	- `inclusion`: (optional) a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will be run against these confident regions. if not included, this region is used for all reports
   - `stratification-regions`: intended to be the GIAB stratification regions, as described [here](https://github.com/genome-in-a-bottle/genome-stratifications). the remote directory will be mirrored locally with lftp. these entries are specified as:
     - `ftp`: the ftp hosting site
 	- `dir`: the subdirectory of the ftp hosting site, through the genome build directory
+	- `region-definitions`: sets of hap.py stratification regions to be included in reports
+	  - `name`: region name in hap.py extended output csv. this is a truncated part of the stratification bed filename
+	  - `label`: pretty label describing this region type. this is intended to be the text description of the bedfile from one of the NIST READMEs
+	  - `inclusion`: a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will feature this hap.py result set. if desired, `".*"` can be specified here to match against all reports
 
 
 The following columns are expected in the experiment manifest, by default at `config/manifest_experiment.tsv`:
@@ -94,7 +100,13 @@ the cookiecutter template [here](https://github.com/Snakemake-Profiles/sge).
 
 After the completion of a run, there will be control validation reports, in html format, at `results/reports`.
 One report will exist per configured comparison, in `config/manifest_comparisons.tsv` column `report`.
-The contents of the report are not yet determined.
+The contents of the report are:
+
+- tabular summaries of requested `region-definitions` from the configuration
+- plots of requested `region-definitions` from the configuration
+- summary information about the R execution environment used to create the report
+
+Other information will be included in future versions.
 
 ### Step 6: Commit changes
 
