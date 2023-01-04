@@ -1,0 +1,17 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: an entry in the experimental sample manifest
+properties:
+  experimental_dataset:
+    type: string
+    description: "unique identifier for subject or library"
+  replicate:
+    type: string
+    description: "identifier linking experimental subjects representing the same underlying sample and conditions"
+  vcf:
+    type: string
+    description: "path to and filename of experimental vcf"
+required:
+  - experimental_dataset
+  - replicate
+  - vcf
+additionalProperties: no

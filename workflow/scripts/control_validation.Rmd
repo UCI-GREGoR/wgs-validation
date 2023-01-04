@@ -1,0 +1,94 @@
+---
+title: "Control Validation Report"
+output:
+  html_document:
+    code_folding: hide
+    md_extensions: "-fancy_lists -emoji"
+    highlight: tango
+    number_sections: no
+    theme: default
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+---
+
+```{r link.variables, eval=TRUE, echo=FALSE}
+#### Link input parameters to local variables
+csvs <- snakemake@input[["csv"]]
+source.file <- snakemake@input[["r_resources"]]
+manifest.experiment <- snakemake@params[["manifest_experiment"]]
+manifest.reference <- snakemake@params[["manifest_reference"]]
+selected.stratifications <- snakemake@params[["selected_stratifications"]]
+comparison.subjects <- snakemake@params[["comparison_subjects"]]
+```
+
+```{r load.packages, eval=TRUE, echo=FALSE}
+#### Load required R packages
+suppressPackageStartupMessages(library(ggplot2, quietly = TRUE))
+suppressPackageStartupMessages(library(RColorBrewer, quietly = TRUE))
+suppressPackageStartupMessages(library(knitr, quietly = TRUE))
+suppressPackageStartupMessages(library(kableExtra, quietly = TRUE))
+```
+
+***
+<br>
+
+```{r load.source, eval=TRUE, echo=FALSE}
+#### Load source functions in separate, testable file
+source(source.file)
+```
+
+```{r aggregate.input.data, eval=TRUE, echo=FALSE}
+#### Combine input csvs into a single tidy data frame
+plot.data <- load.files(csvs)
+```
+
+```{r construct.targets, eval=TRUE, echo=FALSE}
+#### Aggregate input stratification annotations in named vector
+targets <- construct.targets(selected.stratifications, comparison.subjects)
+```
+
+***
+<br>
+
+## Control Validation Results
+
+### Tabular, by Variant Annotation
+
+```{r report.table, eval=TRUE, echo=FALSE, results="asis"}
+my.table <- make.table(plot.data, targets)
+my.table
+```
+
+### Graphical, by Variant Annotation
+
+```{r report.plots, eval=TRUE, echo=FALSE, results="asis", fig.width=10}
+#### Generate simple top-level data for certain straightforward classes
+## what data do we want for such a thing? the original report format
+## contains a table:
+##  - rows are samples (combined by replicate)
+##  - columns are SNV(sens, spec), Del<=50(sens, spec), Ins<=50(sens, spec)
+##  - 95% CIs when "greater than three replicates" are included
+## at the very least, F1 should be included, though without CIs.
+##
+for (i in seq_len(length(targets))) {
+  cat("\n\n####", names(targets)[i], "\n\n")
+  print(make.plot(plot.data, c("SNP", "INDEL"), targets[i]))
+  cat("\n\n***\n<br>\n\n")
+}
+```
+
+***
+<br>
+
+## Session Information
+
+<br>
+
+The following summarizes the loaded R configuration for the run that created this report.
+
+```{r session.info, eval=TRUE, echo=TRUE}
+sessionInfo()
+```
