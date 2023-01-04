@@ -40,7 +40,7 @@ rule acquire_confident_regions:
     """
     input:
         lambda wildcards: tc.wrap_remote_file(
-            config["genomes"][reference_build]["confident-regions"][wildcards.region]
+            config["genomes"][reference_build]["confident-regions"][wildcards.region]["bed"]
         ),
     output:
         "results/confident-regions/{region}.bed",

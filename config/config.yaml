@@ -18,9 +18,33 @@ genomes:
   grch37:
     fasta: "s3://invitae-health-chameleon-dev/reference_data/grch37/human_g1k_v37_modified/human_g1k_v37_modified.fasta"
     confident-regions:
-      AY52: "/locus/data/assays/AY52/targets/v1/annotated_targets.bed"
-      AY85: "/locus/data/assays/AY85/targets/v1/annotated_targets.bed"
-      all: "resources/grch37.bed"
+      AY52:
+        bed: "/locus/data/assays/AY52/targets/v1/annotated_targets.bed"
+      AY85:
+        bed: "/locus/data/assays/AY85/targets/v1/annotated_targets.bed"
+      all:
+        bed: "resources/grch37.bed"
+      NA12878_high_confidence:
+        bed: "https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/NA12878_HG001/latest/GRCh37/HG001_GRCh37_1_22_v4.2.1_benchmark.bed"
+        inclusion: "NA12878"
+      NA24385_high_confidence:
+        bed: "https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG002_NA24385_son/latest/GRCh37/HG002_GRCh37_1_22_v4.2.1_benchmark_noinconsistent.bed"
+        inclusion: "NA24385"
+      NA24149_high_confidence:
+        bed: "https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG003_NA24149_father/latest/GRCh37/HG003_GRCh37_1_22_v4.2.1_benchmark_noinconsistent.bed"
+        inclusion: "NA24149"
+      NA24143_high_confidence:
+        bed: "https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG004_NA24143_mother/latest/GRCh37/HG004_GRCh37_1_22_v4.2.1_benchmark_noinconsistent.bed"
+        inclusion: "NA24143"
+      NA24631_high_confidence:
+        bed: "https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/ChineseTrio/HG005_NA24631_son/latest/GRCh37/HG005_GRCh37_1_22_v4.2.1_benchmark.bed"
+        inclusion: "NA24631"
+      NA24694_high_confidence:
+        bed: "https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/ChineseTrio/HG006_NA24694_father/latest/GRCh37/HG006_GRCh37_1_22_v4.2.1_benchmark.bed"
+        inclusion: "NA24694"
+      NA24695_high_confidence:
+        bed: "https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/ChineseTrio/HG007_NA24695_mother/latest/GRCh37/HG007_GRCh37_1_22_v4.2.1_benchmark.bed"
+        inclusion: "NA24695"
     stratification-regions:
       ftp: "ftp-trace.ncbi.nlm.nih.gov"
       dir: "ReferenceSamples/giab/release/genome-stratifications/v3.1/GRCh37"

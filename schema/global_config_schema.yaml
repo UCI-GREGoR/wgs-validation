@@ -25,7 +25,15 @@ properties:
             type: object
             patternProperties:
               "^.*$":
-                type: string
+                type: object
+                properties:
+                  bed:
+                    type: string
+                  inclusion:
+                    type: string
+                required:
+                  - bed
+                additionalProperties: no
           stratification-regions:
             type: object
             properties:

@@ -1,4 +1,5 @@
 import os
+import re
 from math import ceil
 
 import pandas as pd
@@ -75,19 +76,46 @@ def get_happy_comparison_subjects(
     return list(set(res))
 
 
-def construct_targets(config, manifest: pd.DataFrame) -> list:
+def construct_targets(
+    config, manifest_experiment: pd.DataFrame, manifest_comparisons: pd.DataFrame
+) -> list:
     """
     Use comparison manifest data to generate the set of comparisons
     required for a full pipeline run.
     """
-    comparisons = [x.split(",") for x in manifest["report"]]
+    comparisons = [x.split(",") for x in manifest_comparisons["report"]]
     comparisons = [x for y in comparisons for x in y]
-    regions = list(config["genomes"][config["genome-build"]]["confident-regions"].keys())
-    res = expand(
-        "results/reports/report_{comparison}_vs_region-{region}.html",
-        comparison=comparisons,
-        region=regions,
-    )
+    res = []
+    for comparison in comparisons:
+        regions = []
+        confident_regions = config["genomes"][config["genome-build"]]["confident-regions"]
+        for region in confident_regions:
+            if "inclusion" in confident_regions[region]:
+                target_subjects = []
+                for experimental, report in zip(
+                    manifest_comparisons["experimental_dataset"], manifest_comparisons["report"]
+                ):
+                    if comparison in report.split(","):
+                        target_subjects.extend(
+                            manifest_experiment.loc[
+                                manifest_experiment["experimental_dataset"] == experimental,
+                                "replicate",
+                            ].to_list()
+                        )
+                target_subjects = list(set(target_subjects))
+                target_pattern = re.compile(confident_regions[region]["inclusion"])
+                target_subjects = list(filter(target_pattern.match, target_subjects))
+                if len(target_subjects) > 0:
+                    regions.append(region)
+            else:
+                regions.append(region)
+        res.extend(
+            expand(
+                "results/reports/report_{comparison}_vs_region-{region}.html",
+                comparison=comparison,
+                region=regions,
+            )
+        )
     res = list(set(res))
     res.sort()
     return res
