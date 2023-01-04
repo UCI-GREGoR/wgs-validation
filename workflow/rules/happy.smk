@@ -42,7 +42,7 @@ rule happy_run:
         rtg_wrapper="workflow/scripts/rtg.bash",
     output:
         expand(
-            "results/happy/{{experimental}}/{{reference}}/{{region}}/{{stratification_set}}/results.{suffix}",
+            "results/happy/{{experimental}}/{{reference}}/{{region,[^/]+}}/{{stratification_set,[^/]+}}/results.{suffix}",
             suffix=[
                 "extended.csv",
                 "metrics.json.gz",
@@ -96,7 +96,7 @@ rule happy_add_region_name:
         "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
     output:
         temp(
-            "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.extended.annotated.csv"
+            "results/happy/{experimental}/{reference}/{region,[^/]+}/{stratification_set,[^/]+}/results.extended.annotated.csv"
         ),
     threads: 1
     shell:
@@ -117,7 +117,7 @@ rule happy_combine_results:
             ),
         ),
     output:
-        "results/happy/{experimental}/{reference}/{region}/results.extended.csv",
+        "results/happy/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/results.extended.csv",
     benchmark:
         "results/performance_benchmarks/happy_combine_results/{experimental}/{reference}/{region}/results.tsv"
     conda:

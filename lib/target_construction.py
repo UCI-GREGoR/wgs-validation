@@ -52,6 +52,29 @@ def get_happy_output_files(
     return res
 
 
+def get_happy_comparison_subjects(
+    wildcards,
+    manifest_experiment: pd.DataFrame,
+    manifest_comparisons: pd.DataFrame,
+) -> list:
+    """
+    Use configuration and manifest data to generate the set of subjects
+    included in a specific comparison set.
+    """
+    res = []
+    for experimental, report in zip(
+        manifest_comparisons["experimental_dataset"],
+        manifest_comparisons["report"],
+    ):
+        if wildcards.comparison in report.split(","):
+            res.extend(
+                manifest_experiment.loc[
+                    manifest_experiment["experimental_dataset"] == experimental, "replicate"
+                ].to_list()
+            )
+    return list(set(res))
+
+
 def construct_targets(config, manifest: pd.DataFrame) -> list:
     """
     Use comparison manifest data to generate the set of comparisons
@@ -61,7 +84,7 @@ def construct_targets(config, manifest: pd.DataFrame) -> list:
     comparisons = [x for y in comparisons for x in y]
     regions = list(config["genomes"][config["genome-build"]]["confident-regions"].keys())
     res = expand(
-        "results/reports/control_validation_comparison-{comparison}_vs_region-{region}.html",
+        "results/reports/report_{comparison}_vs_region-{region}.html",
         comparison=comparisons,
         region=regions,
     )
