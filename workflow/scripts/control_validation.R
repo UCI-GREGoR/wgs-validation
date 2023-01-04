@@ -69,14 +69,19 @@ load.files <- function(csv.files) {
 #'
 #' @param stratifications list; flattened configuration input
 #' from snakemake describing name/label pairs
+#' @param comparison.subjects character vector; experimental subject
+#' IDs included in this report
 #' @return named character vector; somewhat confusingly, input names are
 #' values in return vector, while input labels are names in return vector
-construct.targets <- function(stratifications) {
+construct.targets <- function(stratifications, comparison.subjects) {
   res <- c()
   res.names <- c()
-  for (i in seq(1, length(stratifications), 2)) {
-    res <- c(res, strwrap(stratifications[[i]]))
-    res.names <- c(res.names, stratifications[[i + 1]])
+  for (i in seq(1, length(stratifications), 3)) {
+    include.pattern <- stratifications[[i + 2]]
+    if (length(which(stringr::str_detect(comparison.subjects, include.pattern))) > 0) {
+      res <- c(res, strwrap(stratifications[[i]]))
+      res.names <- c(res.names, stratifications[[i + 1]])
+    }
   }
   names(res) <- res.names
   res

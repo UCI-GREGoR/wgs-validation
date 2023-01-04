@@ -21,6 +21,7 @@ source.file <- snakemake@input[["r_resources"]]
 manifest.experiment <- snakemake@params[["manifest_experiment"]]
 manifest.reference <- snakemake@params[["manifest_reference"]]
 selected.stratifications <- snakemake@params[["selected_stratifications"]]
+comparison.subjects <- snakemake@params[["comparison_subjects"]]
 ```
 
 ```{r load.packages, eval=TRUE, echo=FALSE}
@@ -46,7 +47,7 @@ plot.data <- load.files(csvs)
 
 ```{r construct.targets, eval=TRUE, echo=FALSE}
 #### Aggregate input stratification annotations in named vector
-targets <- construct.targets(selected.stratifications)
+targets <- construct.targets(selected.stratifications, comparison.subjects)
 ```
 
 ***
