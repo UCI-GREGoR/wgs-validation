@@ -10,7 +10,7 @@ checkpoint get_stratification_bedfiles:
     output:
         "results/stratification-sets/{genome_build}/stratification_regions.tsv",
     params:
-        outdir="results/regions/{genome_build}",
+        outdir="results/stratification-sets/{genome_build}",
         ftpsite=lambda wildcards: config["genomes"][wildcards.genome_build][
             "stratification-regions"
         ]["ftp"],
