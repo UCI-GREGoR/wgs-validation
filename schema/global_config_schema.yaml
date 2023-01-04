@@ -47,6 +47,7 @@ properties:
                   required:
                     - name
                     - label
+                    - inclusion
                   additionalProperties: no
             required:
               - ftp
