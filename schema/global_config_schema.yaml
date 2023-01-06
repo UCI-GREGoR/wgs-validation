@@ -1,8 +1,77 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 description: global configuration
 properties:
-  manifest:
+  experiment-manifest:
     type: string
+  reference-manifest:
+    type: string
+  comparisons-manifest:
+    type: string
+  happy-bedfiles-per-stratification:
+    type: integer
+    min: 1
+  genome-build:
+    type: string
+    pattern: "^grch[0-9]+$"
+  genomes:
+    type: object
+    patternProperties:
+      "^grch[0-9]+$":
+        type: object
+        properties:
+          fasta:
+            type: string
+          confident-regions:
+            type: object
+            patternProperties:
+              "^.*$":
+                type: object
+                properties:
+                  bed:
+                    type: string
+                  inclusion:
+                    type: string
+                required:
+                  - bed
+                additionalProperties: no
+          stratification-regions:
+            type: object
+            properties:
+              ftp:
+                type: string
+              dir:
+                type: string
+              region-definitions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    label:
+                      type: string
+                    inclusion:
+                      type: string
+                  required:
+                    - name
+                    - label
+                    - inclusion
+                  additionalProperties: no
+            required:
+              - ftp
+              - dir
+              - region-definitions
+            additionalProperties: no
+        required:
+          - fasta
+          - confident-regions
+          - stratification-regions
+        additionalProperties: no
 required:
-  - manifest
+  - experiment-manifest
+  - reference-manifest
+  - comparisons-manifest
+  - happy-bedfiles-per-stratification
+  - genome-build
+  - genomes
 additionalProperties: no

@@ -1,0 +1,13 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: an entry in the reference dataset manifest
+properties:
+  reference_dataset:
+    type: string
+    description: "unique identifier for subject or library"
+  vcf:
+    type: string
+    description: "path to and filename of reference vcf"
+required:
+  - reference_dataset
+  - vcf
+additionalProperties: no

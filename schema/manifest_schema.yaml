@@ -1,9 +1,0 @@
-$schema: "https://json-schema.org/draft/2020-12/schema"
-description: an entry in the sample manifest
-properties:
-  vcf:
-    type: string
-    description: "path to and filename of experimental vcf"
-required:
-  - vcf
-additionalProperties: no

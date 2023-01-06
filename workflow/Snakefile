@@ -11,6 +11,7 @@ from snakemake.utils import validate
 S3 = S3RemoteProvider()
 
 sys.path.insert(0, ".")
+from lib import target_construction as tc
 
 shell.executable("/bin/bash")
 shell.prefix("set -euo pipefail; ")
@@ -22,16 +23,34 @@ configfile: "config/config.yaml"
 validate(config, "../schema/global_config_schema.yaml")
 
 tempDir = "temp"
-manifest = config["manifest"]
-manifest = pd.read_csv(manifest, sep="\t")
+manifest_experiment = config["experiment-manifest"]
+manifest_reference = config["reference-manifest"]
+manifest_comparisons = config["comparisons-manifest"]
+manifest_experiment = pd.read_csv(manifest_experiment, sep="\t").set_index(
+    "experimental_dataset", drop=False
+)
+manifest_reference = pd.read_csv(manifest_reference, sep="\t").set_index(
+    "reference_dataset", drop=False
+)
+manifest_comparisons = pd.read_csv(manifest_comparisons, sep="\t")
+reference_build = config["genome-build"]
 
 
-validate(manifest, "../schema/manifest_schema.yaml")
+validate(manifest_experiment, "../schema/experiment_manifest_schema.yaml")
+validate(manifest_reference, "../schema/reference_manifest_schema.yaml")
+validate(manifest_comparisons, "../schema/comparisons_manifest_schema.yaml")
 
 
-TARGETS = []
+TARGETS = (tc.construct_targets(config, manifest_experiment, manifest_comparisons),)
 
 
 rule all:
     input:
         TARGETS,
+
+
+include: "rules/acquire_data.smk"
+include: "rules/happy.smk"
+include: "rules/reference_data.smk"
+include: "rules/reports.smk"
+include: "rules/vcfeval.smk"
