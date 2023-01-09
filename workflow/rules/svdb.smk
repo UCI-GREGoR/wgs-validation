@@ -12,7 +12,7 @@ def get_bedfile_from_name(wildcards, checkpoints, prefix):
         for line in f.readlines():
             line_data = line.split("\t")
             if line_data[0] == wildcards.subset_name:
-                return "{}/{}".format(prefix, line_data[1].rstrip())
+                return "{}/{}".format(prefix, line_data[1].strip().rstrip())
     raise ValueError(
         'cannot find stratification region with name "{}"'.format(wildcards.subset_name)
     )
@@ -94,15 +94,16 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
         "r",
     ) as f:
         for line in f.readlines():
-            res.append(
-                "results/sv/{}/{}/{}/{}/{}.pwv_comparison".format(
-                    wildcards.experimental,
-                    wildcards.reference,
-                    wildcards.region,
-                    wildcards.stratification_set,
-                    line.split("\t")[0],
-                )
-            ),
+            if len(line.rstrip()) > 0:
+                res.append(
+                    "results/sv/{}/{}/{}/{}/{}.pwv_comparison".format(
+                        wildcards.experimental,
+                        wildcards.reference,
+                        wildcards.region,
+                        wildcards.stratification_set,
+                        line.split("\t")[0].strip().rstrip(),
+                    )
+                ),
     return res
 
 
