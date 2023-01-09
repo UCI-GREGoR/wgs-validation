@@ -27,7 +27,7 @@ rule sv_svdb_within_dataset:
         stratification_bed=lambda wildcards: get_bedfile_from_name(
             wildcards,
             checkpoints,
-            "results/stratification-sets/{}/subsets_for_happy/{{subset_name}}".format(
+            "results/stratification-sets/{}/subsets_for_happy/{{subset_group}}".format(
                 reference_build
             ),
         ),
