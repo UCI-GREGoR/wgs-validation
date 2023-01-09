@@ -11,7 +11,7 @@ def get_bedfile_from_name(wildcards, checkpoints, prefix):
     ) as f:
         for line in f.readlines():
             line_data = line.split("\t")
-            if line_data[0] == wildcards.subset_name:
+            if line_data[0].strip().rstrip() == wildcards.subset_name:
                 return "{}/{}".format(prefix, line_data[1].strip().rstrip())
     raise ValueError(
         'cannot find stratification region with name "{}"'.format(wildcards.subset_name)
