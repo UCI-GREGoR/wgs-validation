@@ -7,11 +7,16 @@ properties:
   reference_dataset:
     type: string
     description: "unique identifier of reference manifest entry to use for comparison"
+  comparison_type:
+    type: string
+    pattern: "^[sS][nN][vV]$|^[sS][vV]$"
+    description: "either SNV or SV; controls type of comparison performed"
   report:
     type: string
     description: "which Rmd report(s) this comparison should be included in"
 required:
   - experimental_dataset
   - reference_dataset
+  - comparison_type
   - report
 additionalProperties: no
