@@ -5,16 +5,16 @@ def get_bedfile_from_name(wildcards, checkpoints, prefix):
     res = []
     with open(
         checkpoints.happy_create_stratification_subset.get(
-            genome_build=reference_build, stratification_set=wildcards.stratification_set
+            genome_build=reference_build, stratification_set=wildcards.subset_name
         ).output[0],
         "r",
     ) as f:
         for line in f.readlines():
             line_data = line.split("\t")
-            if line_data[0] == wildcards.subset_name:
+            if line_data[0] == wildcards.dataset_name:
                 return "{}/{}".format(prefix, line_data[1].strip().rstrip())
     raise ValueError(
-        'cannot find stratification region with name "{}"'.format(wildcards.subset_name)
+        'cannot find stratification region with name "{}"'.format(wildcards.dataset_name)
     )
 
 
