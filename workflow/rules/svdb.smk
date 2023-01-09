@@ -33,9 +33,7 @@ rule sv_svdb_within_dataset:
         ),
         region_bed="results/confident-regions/{region}.bed",
     output:
-        temp(
-            "results/{dataset_type,[^/]+}/{region,[^/]+}/{subset_name}/{dataset_name,[^/]+}.vcf.gz"
-        ),
+        temp("results/{dataset_type}/{region}/{subset_name}/{dataset_name}.vcf.gz"),
     conda:
         "../envs/svdb.yaml"
     shell:
@@ -52,7 +50,7 @@ rule sv_svdb_across_datasets:
         experimental="results/experimentals/{region}/{setname}/{experimental}.vcf.gz",
         reference="results/references/{region}/{setname}/{reference}.vcf.gz",
     output:
-        "results/sv/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/{setname}.post-svdb.vcf.gz",
+        "results/sv/{experimental}/{reference}/{region}/{setname}.post-svdb.vcf.gz",
     conda:
         "../envs/svdb.yaml"
     threads: 1
@@ -120,7 +118,7 @@ rule sv_combine_subsets:
             ),
         ),
     output:
-        csv="results/sv/{experimental}/{reference}/{region,[^/]+}/{stratification_set,[^/]+}/results.extended.csv",
+        csv="results/sv/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
     conda:
         "../envs/r.yaml"
     threads: 1
