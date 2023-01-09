@@ -41,6 +41,10 @@ validate(manifest_reference, "../schema/reference_manifest_schema.yaml")
 validate(manifest_comparisons, "../schema/comparisons_manifest_schema.yaml")
 
 
+wildcard_constraints:
+    dataset_type="|".join(["sv", "happy"]),
+
+
 TARGETS = (tc.construct_targets(config, manifest_experiment, manifest_comparisons),)
 
 
