@@ -1,11 +1,35 @@
+def get_bedfile_from_name(wildcards, checkpoints, prefix):
+    """
+    pull data from checkpoint output
+    """
+    res = []
+    with open(
+        checkpoints.happy_create_stratification_subset.get(
+            genome_build=reference_build, stratification_set=wildcards.stratification_set
+        ).output[0],
+        "r",
+    ) as f:
+        for line in f.readlines():
+            line_data = line.split("\t")
+            if line_data[0] == wildcards.subset_name:
+                return "{}/{}".format(prefix, line_data[1].rstrip())
+    raise ValueError(
+        'cannot find stratification region with name "{}"'.format(wildcards.subset_name)
+    )
+
+
 rule sv_svdb_within_dataset:
     """
     Run svdb merging markers in a single dataset
     """
     input:
         vcf="results/{dataset_type}/{dataset_name}.vcf.gz",
-        stratification_bed="results/stratification-sets/{}/subsets_for_happy/{{subset_name}}".format(
-            reference_build
+        stratification_bed=lambda wildcards: get_bedfile_from_name(
+            wildcards,
+            checkpoints,
+            "results/stratification-sets/{}/subsets_for_happy/{{subset_name}}".format(
+                reference_build
+            ),
         ),
         region_bed="results/confident-regions/{region}.bed",
     output:
@@ -76,7 +100,7 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
                     wildcards.reference,
                     wildcards.region,
                     wildcards.stratification_set,
-                    line,
+                    line.split("\t")[0],
                 )
             ),
     return res
