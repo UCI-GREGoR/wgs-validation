@@ -33,7 +33,9 @@ rule sv_svdb_within_dataset:
         ),
         region_bed="results/confident-regions/{region}.bed",
     output:
-        temp("results/{dataset_type}/{region}/{subset_name}/{dataset_name}.vcf.gz"),
+        temp(
+            "results/{dataset_type,[^/]+}/{region,[^/]+}/{subset_name,[^/]+}/{dataset_name,[^/]+}.vcf.gz"
+        ),
     conda:
         "../envs/svdb.yaml"
     shell:
