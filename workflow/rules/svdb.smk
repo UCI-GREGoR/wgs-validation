@@ -4,15 +4,20 @@ rule sv_svdb_within_dataset:
     """
     input:
         vcf="results/{dataset_type}/{dataset_name}.vcf.gz",
-        bed="results/stratification-sets/{}/subsets_for_happy/{{stratification_set}}/{{subset_name}}".format(
+        stratification_bed="results/stratification-sets/{}/subsets_for_happy/{{subset_name}}".format(
             reference_build
         ),
+        region_bed="results/confident-regions/{region}.bed",
     output:
-        temp("results/{dataset_type,[^/]+}/{subset_name}/{dataset_name,[^/]+}.vcf.gz"),
+        temp(
+            "results/{dataset_type,[^/]+}/{region,[^/]+}/{subset_name}/{dataset_name,[^/]+}.vcf.gz"
+        ),
     conda:
         "../envs/svdb.yaml"
     shell:
-        "bedtools intersect -a {input.vcf} -b {input.bed} -wa -f 1 | svdb --merge --vcf {input.vcf} | bgzip -c > {output}"
+        "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
+        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 | "
+        "svdb --merge --vcf {input.vcf} | bgzip -c > {output}"
 
 
 rule sv_svdb_across_datasets:
@@ -20,10 +25,10 @@ rule sv_svdb_across_datasets:
     Run svdb combining experimental and reference data
     """
     input:
-        experimental="results/experimentals/{setname}/{experimental}.vcf.gz",
-        reference="results/references/{setname}/{reference}.vcf.gz",
+        experimental="results/experimentals/{region}/{setname}/{experimental}.vcf.gz",
+        reference="results/references/{region}/{setname}/{reference}.vcf.gz",
     output:
-        "results/sv/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/{stratification_set,[^/]+}/{setname}",
+        "results/sv/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/{setname}",
     conda:
         "../envs/svdb.yaml"
     threads: 1
