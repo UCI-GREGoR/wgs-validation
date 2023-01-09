@@ -69,9 +69,9 @@ rule sv_summarize_variant_sources:
     summary data
     """
     input:
-        "{prefix}.vcf.gz",
+        "{prefix}.between-svdb.vcf.gz",
     output:
-        temp("{prefix}.vcf.gz.pwv_comparison"),
+        temp("{prefix}.between-svdb.vcf.gz.pwv_comparison"),
     conda:
         "../envs/bcftools.yaml"
     threads: 1
@@ -96,7 +96,7 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
         for line in f.readlines():
             if len(line.rstrip()) > 0:
                 res.append(
-                    "results/sv/{}/{}/{}/{}/{}.vcf.gz.pwv_comparison".format(
+                    "results/sv/{}/{}/{}/{}/{}.between-svdb.vcf.gz.pwv_comparison".format(
                         wildcards.experimental,
                         wildcards.reference,
                         wildcards.region,
