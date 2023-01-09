@@ -3,13 +3,11 @@ def get_bedfile_from_name(wildcards, checkpoints, prefix):
     pull data from checkpoint output
     """
     res = []
-
-    cpt = checkpoints.happy_create_stratification_subset.get(
-        genome_build=reference_build, stratification_set=wildcards.stratification_set
-    ).output[0]
-
     with open(
-        "results/stratification-sets/{}/stratification_regions.tsv".format(reference_build), "r"
+        checkpoints.happy_create_stratification_subset.get(
+            genome_build=reference_build, stratification_set=wildcards.stratification_set
+        ).output[0],
+        "r",
     ) as f:
         for line in f.readlines():
             line_data = line.split("\t")
@@ -29,7 +27,9 @@ rule sv_svdb_within_dataset:
         stratification_bed=lambda wildcards: get_bedfile_from_name(
             wildcards,
             checkpoints,
-            "results/stratification-sets/{}".format(reference_build),
+            "results/stratification-sets/{}/subsets_for_happy/{{subset_name}}".format(
+                reference_build
+            ),
         ),
         region_bed="results/confident-regions/{region}.bed",
     output:
