@@ -45,6 +45,7 @@ TARGETS = (tc.construct_targets(config, manifest_experiment, manifest_comparison
 
 
 ruleorder: sv_svdb_within_dataset > download_experimental_data
+ruleorder: sv_svdb_within_dataset > download_reference_data
 
 
 rule all:
