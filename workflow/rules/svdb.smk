@@ -5,7 +5,7 @@ def get_bedfile_from_name(wildcards, checkpoints, prefix):
     res = []
 
     cpt = checkpoints.happy_create_stratification_subset.get(
-        genome_build=reference_build, stratification_set=wildcards.stratification_set
+        genome_build=reference_build, stratification_set="0"
     ).output[0]
 
     with open(
