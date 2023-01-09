@@ -94,7 +94,7 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
         for line in f.readlines():
             if len(line.rstrip()) > 0:
                 res.append(
-                    "results/sv/{}/{}/{}/{}/{}.pwv_comparison".format(
+                    "results/sv/{}/{}/{}/{}/{}.vcf.gz.pwv_comparison".format(
                         wildcards.experimental,
                         wildcards.reference,
                         wildcards.region,
