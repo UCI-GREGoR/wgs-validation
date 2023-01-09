@@ -87,16 +87,16 @@ localrules:
     happy_combine_results,
 
 
-rule happy_add_region_name:
+rule add_region_name:
     """
     To prepare for merging files from separate regions, prefix the lines
     with the name of the region.
     """
     input:
-        "results/happy/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
+        "results/{comparison_type}/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
     output:
         temp(
-            "results/happy/{experimental}/{reference}/{region,[^/]+}/{stratification_set,[^/]+}/results.extended.annotated.csv"
+            "results/{comparison_type,[^/]}/{experimental}/{reference}/{region,[^/]+}/{stratification_set,[^/]+}/results.extended.annotated.csv"
         ),
     threads: 1
     shell:
@@ -105,23 +105,21 @@ rule happy_add_region_name:
         '\'NR == 1 {{print "Experimental,Reference,Region,"$0}} ; NR > 1 {{print ex","ref","reg","$0}}\' > {output}'
 
 
-rule happy_combine_results:
+rule combine_results:
     """
     Combine annotated summary results from Illumina's hap.py utility run against different sets of stratification regions.
     """
     input:
         lambda wildcards: expand(
-            "results/happy/{{experimental}}/{{reference}}/{{region}}/{stratification_set}/results.extended.annotated.csv",
+            "results/{{comparison_type}}/{{experimental}}/{{reference}}/{{region}}/{stratification_set}/results.extended.annotated.csv",
             stratification_set=tc.get_happy_stratification_set_indices(
                 wildcards, config, checkpoints
             ),
         ),
     output:
-        "results/happy/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/results.extended.csv",
+        "results/{comparison_type,[^/]+}/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/results.extended.csv",
     benchmark:
-        "results/performance_benchmarks/happy_combine_results/{experimental}/{reference}/{region}/results.tsv"
-    conda:
-        "../envs/bcftools.yaml"
+        "results/performance_benchmarks/{comparison_type}_combine_results/{experimental}/{reference}/{region}/results.tsv"
     threads: 1
     shell:
         "cat {input} | awk 'NR == 1 || ! /^Experimental,Reference,Region,Type,Subtype,Subset,Filter,TRUTH.TOTAL/' > {output}"
