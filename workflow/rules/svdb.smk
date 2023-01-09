@@ -4,7 +4,9 @@ rule sv_svdb_within_dataset:
     """
     input:
         vcf="results/{dataset_type}/{dataset_name}.vcf.gz",
-        bed="results/stratification-sets/{genome_build}/subsets_for_happy/{stratification_set}/{subset_name}",
+        bed="results/stratification-sets/{}/subsets_for_happy/{{stratification_set}}/{{subset_name}}".format(
+            reference_build
+        ),
     output:
         temp("results/{dataset_type,[^/]+}/{subset_name}/{dataset_name,[^/]+}.vcf.gz"),
     conda:

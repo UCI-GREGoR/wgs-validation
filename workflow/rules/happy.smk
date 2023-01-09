@@ -83,8 +83,8 @@ rule happy_run:
 
 
 localrules:
-    happy_add_region_name,
-    happy_combine_results,
+    add_region_name,
+    combine_results,
 
 
 rule add_region_name:
