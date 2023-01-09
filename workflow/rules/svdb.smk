@@ -33,7 +33,9 @@ rule sv_svdb_within_dataset:
         ),
         region_bed="results/confident-regions/{region}.bed",
     output:
-        temp("results/{dataset_type}/{region}/{subset_group}/{subset_name}/{dataset_name}.vcf.gz"),
+        temp(
+            "results/{dataset_type}/{region}/{subset_group}/{subset_name}/{dataset_name}.within-svdb.vcf.gz"
+        ),
     conda:
         "../envs/svdb.yaml"
     shell:
@@ -47,10 +49,10 @@ rule sv_svdb_across_datasets:
     Run svdb combining experimental and reference data
     """
     input:
-        experimental="results/experimentals/{region}/{setgroup}/{setname}/{experimental}.vcf.gz",
-        reference="results/references/{region}/{setgroup}/{setname}/{reference}.vcf.gz",
+        experimental="results/experimentals/{region}/{setgroup}/{setname}/{experimental}.within-svdb.vcf.gz",
+        reference="results/references/{region}/{setgroup}/{setname}/{reference}.within-svdb.vcf.gz",
     output:
-        "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.post-svdb.vcf.gz",
+        "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
     conda:
         "../envs/svdb.yaml"
     threads: 1
