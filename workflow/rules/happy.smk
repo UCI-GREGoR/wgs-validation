@@ -96,7 +96,7 @@ rule add_region_name:
         "results/{comparison_type}/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
     output:
         temp(
-            "results/{comparison_type,[^/]}/{experimental}/{reference}/{region,[^/]+}/{stratification_set,[^/]+}/results.extended.annotated.csv"
+            "results/{comparison_type,[^/]+}/{experimental}/{reference}/{region,[^/]+}/{stratification_set,[^/]+}/results.extended.annotated.csv"
         ),
     threads: 1
     shell:
