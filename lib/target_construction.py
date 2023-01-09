@@ -39,15 +39,19 @@ def get_happy_output_files(
     two columns *should* exist as indices in the corresponding other manifests.
     """
     res = []
-    for reference, experimental, report in zip(
+    for reference, experimental, comparison_type, report in zip(
         manifest_comparisons["reference_dataset"],
         manifest_comparisons["experimental_dataset"],
+        manifest_comparisons["comparison_type"],
         manifest_comparisons["report"],
     ):
         if wildcards.comparison in report.split(","):
             res.append(
-                "results/happy/{}/{}/{}/results.extended.csv".format(
-                    experimental, reference, wildcards.region
+                "results/{}/{}/{}/{}/results.extended.csv".format(
+                    "happy" if comparison_type == "SNV" else "sv",
+                    experimental,
+                    reference,
+                    wildcards.region,
                 )
             )
     return res

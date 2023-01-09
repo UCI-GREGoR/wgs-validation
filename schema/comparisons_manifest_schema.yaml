@@ -9,7 +9,7 @@ properties:
     description: "unique identifier of reference manifest entry to use for comparison"
   comparison_type:
     type: string
-    pattern: "^[sS][nN][vV]$|^[sS][vV]$"
+    pattern: "^SNV$|^SV$"
     description: "either SNV or SV; controls type of comparison performed"
   report:
     type: string
