@@ -28,7 +28,7 @@ rule sv_svdb_across_datasets:
         experimental="results/experimentals/{region}/{setname}/{experimental}.vcf.gz",
         reference="results/references/{region}/{setname}/{reference}.vcf.gz",
     output:
-        "results/sv/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/{setname}",
+        "results/sv/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/{setname}.post-svdb.vcf.gz",
     conda:
         "../envs/svdb.yaml"
     threads: 1
