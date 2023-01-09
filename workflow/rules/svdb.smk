@@ -95,7 +95,7 @@ rule sv_combine_subsets:
             ),
         ),
     output:
-        csv="results/sv/{{experimental}}/{{reference}}/{{region,[^/]+}}/{{stratification_set,[^/]+}}/results.extended.csv",
+        csv="results/sv/{experimental}/{reference}/{region,[^/]+}/{stratification_set,[^/]+}/results.extended.csv",
     conda:
         "../envs/r.yaml"
     threads: 1
