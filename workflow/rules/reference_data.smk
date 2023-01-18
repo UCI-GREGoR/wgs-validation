@@ -60,12 +60,14 @@ rule acquire_fasta:
         lambda wildcards: tc.wrap_remote_file(config["genomes"][wildcards.genome]["fasta"]),
     output:
         "results/{genome}/ref.fasta",
+    params:
+        source=lambda wildcards: config["genomes"][wildcards.genome]["fasta"],
     threads: 1
     resources:
         qname="small",
         mem_mb="2000",
     shell:
-        "cp {input} {output}"
+        'if [[ "{params.source}" = *".gz" ]] ; then gunzip -c {input} > {output} ; else cp {input} {output} ; fi'
 
 
 rule create_fai:
