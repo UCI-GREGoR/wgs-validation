@@ -40,7 +40,7 @@ rule sv_svdb_within_dataset:
         "../envs/svdb.yaml"
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
-        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 | "
+        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header | "
         "svdb --merge --vcf {input.vcf} | bgzip -c > {output}"
 
 
