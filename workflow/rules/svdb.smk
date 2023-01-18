@@ -127,7 +127,7 @@ rule sv_combine_subsets:
         experimental="{experimental}",
         reference="{reference}",
         region="{region}",
-        stratification="{setname}",
+        stratification="{stratification_set}",
     conda:
         "../envs/r.yaml"
     threads: 1
