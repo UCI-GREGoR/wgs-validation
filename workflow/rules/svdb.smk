@@ -69,9 +69,11 @@ rule sv_summarize_variant_sources:
     summary data
     """
     input:
-        "{prefix}.between-svdb.vcf.gz",
+        "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
     output:
-        temp("{prefix}.between-svdb.vcf.gz.pwv_comparison"),
+        temp(
+            "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz.pwv_comparison"
+        ),
     conda:
         "../envs/bcftools.yaml"
     threads: 1
@@ -121,6 +123,11 @@ rule sv_combine_subsets:
         ),
     output:
         csv="results/sv/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
+    params:
+        experimental="{experimental}",
+        reference="{reference}",
+        region="{region}",
+        stratification="{setname}",
     conda:
         "../envs/r.yaml"
     threads: 1
