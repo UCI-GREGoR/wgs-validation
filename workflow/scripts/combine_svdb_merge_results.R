@@ -54,16 +54,16 @@ run.combine.svdb.merge.results <- function(input.comparisons,
                                            experimental.code,
                                            reference.code,
                                            confident.region,
-                                           stratification.set,
                                            output.csv) {
-  stopifnot(length(input.comparisons) == length(stratification.set))
   stopifnot(is.character(input.comparisons))
   stopifnot(is.character(experimental.code))
   stopifnot(is.character(reference.code))
   stopifnot(is.character(confident.region))
   stopifnot(is.character(stratification.set))
   stopifnot(is.character(output.csv))
-
+  stratification.set <- unname(sapply(basename(input.comparisons), function(i) {
+    strsplit(i, "\\.")[[1]][1]
+  }))
   res <- data.frame()
   for (i in seq_len(length(input.comparisons))) {
     in.filename <- input.comparisons[i]
@@ -116,7 +116,6 @@ if (exists("snakemake")) {
     snakemake@params[["experimental"]],
     snakemake@params[["reference"]],
     snakemake@params[["region"]],
-    snakemake@params[["stratification"]],
     snakemake@output[["csv"]]
   )
 }
