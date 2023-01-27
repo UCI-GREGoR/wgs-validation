@@ -59,7 +59,6 @@ run.combine.svdb.merge.results <- function(input.comparisons,
   stopifnot(is.character(experimental.code))
   stopifnot(is.character(reference.code))
   stopifnot(is.character(confident.region))
-  stopifnot(is.character(stratification.set))
   stopifnot(is.character(output.csv))
   stratification.set <- unname(sapply(basename(input.comparisons), function(i) {
     strsplit(i, "\\.")[[1]][1]
