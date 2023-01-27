@@ -38,10 +38,15 @@ rule sv_svdb_within_dataset:
         ),
     conda:
         "../envs/svdb.yaml"
+    threads: 1
+    resources:
+        mem_mb="8000",
+        qname="small",
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
-        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header | "
-        "svdb --merge --vcf {input.vcf} | bgzip -c > {output}"
+        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header > {output}.tmp.vcf && "
+        "svdb --merge --vcf {output}.tmp.vcf | sed 's/.tmp.vcf//g' | bgzip -c > {output} && "
+        "rm {output}.tmp.vcf"
 
 
 rule sv_svdb_across_datasets:
@@ -57,7 +62,7 @@ rule sv_svdb_across_datasets:
         "../envs/svdb.yaml"
     threads: 1
     resources:
-        mem_mb="4000",
+        mem_mb="8000",
         qname="small",
     shell:
         "svdb --merge --vcf {input} | bgzip -c > {output}"
@@ -127,7 +132,6 @@ rule sv_combine_subsets:
         experimental="{experimental}",
         reference="{reference}",
         region="{region}",
-        stratification="{stratification_set}",
     conda:
         "../envs/r.yaml"
     threads: 1
