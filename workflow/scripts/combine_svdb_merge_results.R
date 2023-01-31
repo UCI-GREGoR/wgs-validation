@@ -67,6 +67,10 @@ run.combine.svdb.merge.results <- function(input.comparisons,
   for (i in seq_len(length(input.comparisons))) {
     in.filename <- input.comparisons[i]
     stratification <- stratification.set[i]
+    ## deal with the possibility that there are no variants in a stratification region
+    if (file.info(in.filename)$size == 0) {
+      next
+    }
     h <- read.table(in.filename, header = FALSE, stringsAsFactors = FALSE, sep = "\t", comment.char = "")
     colnames(h) <- c(
       "CHROM",
@@ -106,7 +110,11 @@ run.combine.svdb.merge.results <- function(input.comparisons,
       res <- rbind(res, df)
     }
   }
-  write.table(res, output.csv, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = ",")
+  if (nrow(res) == 0) {
+    touch(output.csv)
+  } else {
+    write.table(res, output.csv, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = ",")
+  }
 }
 
 if (exists("snakemake")) {
