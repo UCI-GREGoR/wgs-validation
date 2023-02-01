@@ -97,7 +97,7 @@ run.combine.svdb.merge.results <- function(input.comparisons,
       Reference = reference.code,
       Region = confident.region,
       Type = "SV",
-      Stratification = stratification,
+      Subset = stratification,
       Filter = "PASS",
       METRIC.Recall = recall,
       METRIC.Precision = precision,
@@ -111,7 +111,7 @@ run.combine.svdb.merge.results <- function(input.comparisons,
     }
   }
   if (nrow(res) == 0) {
-    touch(output.csv)
+    file.create(output.csv)
   } else {
     write.table(res, output.csv, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = ",")
   }
