@@ -122,4 +122,4 @@ rule combine_results:
         "results/performance_benchmarks/{comparison_type}_combine_results/{experimental}/{reference}/{region}/results.tsv"
     threads: 1
     shell:
-        "cat {input} | awk 'NR == 1 || ! /^Experimental,Reference,Region,Type,Subtype,Subset,Filter,TRUTH.TOTAL/' > {output}"
+        "cat {input} | awk 'NR == 1 || ! /^Experimental,Reference,Region,/' > {output}"
