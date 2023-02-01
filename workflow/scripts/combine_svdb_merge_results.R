@@ -93,9 +93,6 @@ run.combine.svdb.merge.results <- function(input.comparisons,
     f1 <- 2 * true.positives / (2 * true.positives + false.positives + false.negatives)
 
     df <- data.frame(
-      Experimental = experimental.code,
-      Reference = reference.code,
-      Region = confident.region,
       Type = "SV",
       Subset = stratification,
       Filter = "PASS",
