@@ -6,7 +6,7 @@ rule download_reference_data:
     has serious timeout problems.
     """
     output:
-        "results/references/{reference}.vcf.gz",
+        "results/references/{reference,[^/]+}.vcf.gz",
     params:
         lambda wildcards: tc.map_reference_file(wildcards, manifest_reference),
     conda:
@@ -26,6 +26,6 @@ rule download_reference_data:
 
 use rule download_reference_data as download_experimental_data with:
     output:
-        "results/experimentals/{experimental}.vcf.gz",
+        "results/experimentals/{experimental,[^/]+}.vcf.gz",
     params:
         lambda wildcards: tc.map_experimental_file(wildcards, manifest_experiment),
