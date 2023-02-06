@@ -3,7 +3,7 @@ GIAB_HG001_GRCh37	ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/NA12878_HG00
 GIAB_HG002_GRCh37	ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/AshkenazimTrio/HG002_NA24385_son/NISTv4.1/GRCh37/HG002_GRCh37_1_22_v4.1_draft_benchmark.vcf.gz
 GIAB_HG005_GRCh37	ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/ChineseTrio/HG005_NA24631_son/NISTv3.3.2/GRCh37/HG005_GRCh37_highconf_CG-IllFB-IllGATKHC-Ion-SOLID_CHROM1-22_v.3.3.2_highconf.vcf.gz
 GIAB_HG001_NA12878_GRCh37_NIST	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/NA12878_HG001/latest/GRCh37/HG001_GRCh37_1_22_v4.2.1_benchmark.vcf.gz
-GIAB_HG001_NA12878_GRCh38_NIST	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/NA12878_HG001/latest/GRCh38/HG001_GRCh37_1_22_v4.2.1_benchmark.vcf.gz
+GIAB_HG001_NA12878_GRCh38_NIST	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/NA12878_HG001/latest/GRCh38/HG001_GRCh38_1_22_v4.2.1_benchmark.vcf.gz
 GIAB_HG002_NA24385_GRCh37_NIST	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG002_NA24385_son/latest/GRCh37/HG002_GRCh37_1_22_v4.2.1_benchmark.vcf.gz
 GIAB_HG002_NA24385_GRCh38_NIST	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG002_NA24385_son/latest/GRCh38/HG002_GRCh38_1_22_v4.2.1_benchmark.vcf.gz
 GIAB_HG003_NA24149_GRCh37_NIST	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/AshkenazimTrio/HG003_NA24149_father/latest/GRCh37/HG003_GRCh37_1_22_v4.2.1_benchmark.vcf.gz
