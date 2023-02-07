@@ -22,6 +22,7 @@ manifest.experiment <- snakemake@params[["manifest_experiment"]]
 manifest.reference <- snakemake@params[["manifest_reference"]]
 selected.stratifications <- snakemake@params[["selected_stratifications"]]
 comparison.subjects <- snakemake@params[["comparison_subjects"]]
+variant.types <- snakemake@params[["variant_types"]]
 ```
 
 ```{r load.packages, eval=TRUE, echo=FALSE}
@@ -75,7 +76,7 @@ my.table
 ##
 for (i in seq_len(length(targets))) {
   cat("\n\n####", names(targets)[i], "\n\n")
-  print(make.plot(plot.data, c("SNP", "INDEL"), targets[i]))
+  print(make.plot(plot.data, variant.types, targets[i]))
   cat("\n\n***\n<br>\n\n")
 }
 ```

@@ -17,6 +17,9 @@ rule control_validation_report:
         comparison_subjects=lambda wildcards: tc.get_happy_comparison_subjects(
             wildcards, manifest_experiment, manifest_comparisons
         ),
+        variant_types=lambda wildcards: tc.get_variant_types(
+            manifest_comparisons, wildcards.comparison
+        ),
     benchmark:
         "results/performance_benchmarks/reports/report_{comparison}_vs_region-{region}.tsv"
     conda:
