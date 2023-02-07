@@ -101,6 +101,9 @@ construct.targets <- function(stratifications, comparison.subjects) {
 #' be used as the title of the plot
 #' @return ggplot2 plot object
 make.plot <- function(plot.data, data.panels, data.subset, data.label = NULL) {
+  stopifnot("Invalid variant types selected" = {
+    length(which(plot.data$Type %in% data.panels)) > 0
+  })
   plot.data <- plot.data[plot.data$Type %in% data.panels & plot.data$Subset == data.subset, ]
   subject.label <- paste(plot.data$Experimental, "vs\n", plot.data$Reference)
   plot.data$Type <- factor(plot.data$Type, levels = data.panels)
