@@ -49,6 +49,7 @@ plot.data <- load.files(csvs)
 ```{r construct.targets, eval=TRUE, echo=FALSE}
 #### Aggregate input stratification annotations in named vector
 targets <- construct.targets(selected.stratifications, comparison.subjects)
+targets <- filter.targets(targets, plot.data)
 ```
 
 ***
@@ -59,7 +60,7 @@ targets <- construct.targets(selected.stratifications, comparison.subjects)
 ### Tabular, by Variant Annotation
 
 ```{r report.table, eval=TRUE, echo=FALSE, results="asis"}
-my.table <- make.table(plot.data, targets)
+my.table <- make.table(plot.data, variant.types, targets)
 my.table
 ```
 

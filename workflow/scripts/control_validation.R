@@ -64,7 +64,6 @@ load.files <- function(csv.files) {
   res
 }
 
-
 #' Add name/label pairs as a named vector for downstream iteration
 #'
 #' @param stratifications list; flattened configuration input
@@ -84,6 +83,27 @@ construct.targets <- function(stratifications, comparison.subjects) {
     }
   }
   names(res) <- res.names
+  res
+}
+
+#' Filter target variant sets with no available data
+#'
+#' @param targets character vector; set of target variant sets
+#' @param data data.frame; loaded variant data
+#' @return character vector; filtered set of input targets
+#' with empty target sets removed
+filter.targets <- function(targets, data) {
+  empty.targets <- c()
+  for (target in targets) {
+    if (length(which(data$Subset == target)) == 0) {
+      warning("Empty target variant set removed: \"", target, "\"", sep = "")
+      empty.targets <- c(empty.targets, target)
+    }
+  }
+  res <- targets[!(targets %in% empty.targets)]
+  stopifnot("No valid target variant sets left for analysis" = {
+    length(res) > 0
+  })
   res
 }
 
@@ -128,43 +148,48 @@ make.plot <- function(plot.data, data.panels, data.subset, data.label = NULL) {
 #'
 #' @param plot.data data frame of input data
 #' aggregated across hap.py csv output
+#' @param variant.typees character vector, either SNP or INDEL or both
 #' @param targets character vector; entries
 #' are "Subset", names are human-legible labels
 #' @return kable of report data
-make.table <- function(plot.data, targets) {
-  snps.all <- plot.data[plot.data$Type == "SNP", ]
-  indels.all <- plot.data[plot.data$Type == "INDEL", ]
-  snps.final <- data.frame()
-  indels.final <- data.frame()
+make.table <- function(plot.data, variant.types, targets) {
+  variants.all <- list()
+  variants.final <- list()
+  for (variant.type in variant.types) {
+    stopifnot("No data for requested variant type" = {
+      length(which(plot.data$Type == variant.type)) > 0
+    })
+    variants.all[[variant.type]] <- plot.data[plot.data$Type == variant.type, ]
+    variants.final[[variant.type]] <- data.frame()
+  }
   block.cutoffs <- c()
   for (i in seq_len(length(targets))) {
-    snps <- snps.all[snps.all$Subset == targets[i], ]
-    indels <- indels.all[indels.all$Subset == targets[i], ]
-    snps <- data.frame(
-      Experimental = snps[snps[, "Metric.Type"] == "Precision", "Experimental"],
-      Reference = snps[snps[, "Metric.Type"] == "Precision", "Reference"],
-      Precision = snps[snps[, "Metric.Type"] == "Precision", "Metric"],
-      Recall = snps[snps[, "Metric.Type"] == "Recall", "Metric"],
-      F1 = snps[snps[, "Metric.Type"] == "F1", "Metric"]
-    )
-    indels <- data.frame(
-      Experimental = indels[indels[, "Metric.Type"] == "Precision", "Experimental"],
-      Reference = indels[indels[, "Metric.Type"] == "Precision", "Reference"],
-      Precision = indels[indels[, "Metric.Type"] == "Precision", "Metric"],
-      Recall = indels[indels[, "Metric.Type"] == "Recall", "Metric"],
-      F1 = indels[indels[, "Metric.Type"] == "F1", "Metric"]
-    )
-    if (nrow(snps.final) > 0) {
-      snps.final <- rbind(snps.final, snps)
-      indels.final <- rbind(indels.final, indels)
-    } else {
-      snps.final <- snps
-      indels.final <- indels
+    for (variant.type in variant.types) {
+      variants <- variants.all[[variant.type]][variants.all[[variant.type]]$Subset == targets[i], ]
+      variants <- data.frame(
+        Experimental = variants[variants[, "Metric.Type"] == "Precision", "Experimental"],
+        Reference = variants[variants[, "Metric.Type"] == "Precision", "Reference"],
+        Precision = variants[variants[, "Metric.Type"] == "Precision", "Metric"],
+        Recall = variants[variants[, "Metric.Type"] == "Recall", "Metric"],
+        F1 = variants[variants[, "Metric.Type"] == "F1", "Metric"]
+      )
+      if (nrow(variants.final[[variant.type]]) > 0) {
+        variants.final[[variant.type]] <- rbind(variants.final[[variant.type]], variants)
+      } else {
+        variants.final[[variant.type]] <- variants
+      }
+      if (length(block.cutoffs) < i) {
+        block.cutoffs <- c(block.cutoffs, nrow(variants.final[[variant.type]]))
+      }
     }
-    block.cutoffs <- c(block.cutoffs, nrow(snps.final))
   }
   ## truncate decimal precision, because come now
-  res <- cbind(snps.final, indels.final[, 3:5])
+  res <- variants.final[[1]]
+  if (length(variants.final) > 1) {
+    for (i in seq(2, length(variants.final))) {
+      res <- rbind(res, variants.final[[i]][, 3:5])
+    }
+  }
   for (i in seq(3, ncol(res))) {
     res[, i] <- signif(res[, i], 4)
   }
@@ -178,6 +203,10 @@ make.table <- function(plot.data, targets) {
       block.cutoffs[i]
     )
   }
-  res <- res %>% kableExtra::add_header_above(c("Comparison" = 2, "SNPs" = 3, "INDELs" = 3))
+  headers <- c("Comparison" = 2)
+  headers.per.variant <- rep(3, length(variant.types))
+  names(headers.per.variant) <- variant.types
+  headers <- c(headers, headers.per.variant)
+  res <- res %>% kableExtra::add_header_above(headers)
   res
 }
