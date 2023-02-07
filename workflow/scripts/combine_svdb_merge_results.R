@@ -23,8 +23,10 @@ library(stringr)
 #'     - DEL:ME: deletion of mobile element relative to the reference
 #'     - INS:ME: insertion of a mobile element relative to the reference
 #'   - BND: breakend
-#' - INFO/svdb_origin: annotated by svdb. comma-delimited list of
-#'   source files that had variants combined into the current record
+#' - INFO: annotated by svdb. contains in part a comma-delimited list of
+#'   source files that had variants combined into the current record.
+#'   multiple INFO entries with the same tag cause issues upstream, so this is
+#'   just the entire INFO block
 #'
 #' The logic flow is as follows (this is a working model):
 #' - variants present in reference and experimental are
@@ -84,10 +86,10 @@ run.combine.svdb.merge.results <- function(input.comparisons,
       "QUAL",
       "FILTER",
       "SVTYPE",
-      "svdb_origin"
+      "INFO"
     )
-    in.experimental <- stringr::str_detect(h$svdb_origin, experimental.code)
-    in.reference <- stringr::str_detect(h$svdb_origin, reference.code)
+    in.experimental <- stringr::str_detect(h$INFO, experimental.code)
+    in.reference <- stringr::str_detect(h$INFO, reference.code)
     true.positives <- length(which(in.experimental & in.reference))
     false.positives <- length(which(in.experimental & !in.reference))
     false.negatives <- length(which(!in.experimental & in.reference))

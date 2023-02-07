@@ -73,7 +73,9 @@ rule sv_svdb_across_datasets:
 rule sv_summarize_variant_sources:
     """
     Given a vcf that's been passed through svdb, use bcftools to extract
-    summary data
+    summary data. It turns out that the way svdb emits tracking data creates
+    problematic information that bcftools doesn't love. As such, this no longer
+    selects `svdb_origin`, instead just opting to pattern match across all of INFO downstream.
     """
     input:
         "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
@@ -88,7 +90,7 @@ rule sv_summarize_variant_sources:
         mem_mb="2000",
         qname="small",
     shell:
-        "bcftools query -f '%CHROM\\t%POS\\t%ID\\t%REF\\t%ALT\\t%QUAL\\t%FILTER\\t%INFO/SVTYPE\\t%INFO/svdb_origin\\n' {input} > {output}"
+        "bcftools query -f '%CHROM\\t%POS\\t%ID\\t%REF\\t%ALT\\t%QUAL\\t%FILTER\\t%INFO/SVTYPE\\t%INFO\\n' {input} > {output}"
 
 
 def find_datasets_in_subset(wildcards, checkpoints, prefix):
