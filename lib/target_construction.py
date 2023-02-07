@@ -80,6 +80,26 @@ def get_happy_comparison_subjects(
     return list(set(res))
 
 
+def get_variant_types(manifest_comparisons: pd.DataFrame, comparison: str) -> list:
+    """
+    Determine the variant types that should be queried from hap.py output files
+    based on requested comparison type
+    """
+    res = []
+    for report, comparison_type in zip(
+        manifest_comparisons["report"], manifest_comparisons["comparison_type"]
+    ):
+        if comparison in report.split(","):
+            if comparison_type == "SV":
+                res.append("SV")
+            elif comparison_type == "SNV":
+                res.append("SNP")
+                res.append("Indel")
+            else:
+                raise ValueError('Unrecognized comparison type: "{}"'.format(comparison_type))
+    return list(set(res))
+
+
 def construct_targets(
     config, manifest_experiment: pd.DataFrame, manifest_comparisons: pd.DataFrame
 ) -> list:
