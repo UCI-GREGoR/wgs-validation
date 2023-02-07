@@ -67,6 +67,9 @@ run.combine.svdb.merge.results <- function(input.comparisons,
   for (i in seq_len(length(input.comparisons))) {
     in.filename <- input.comparisons[i]
     stratification <- stratification.set[i]
+    if (stratification == "all_background") {
+      stratification <- "*"
+    }
     ## deal with the possibility that there are no variants in a stratification region
     if (file.info(in.filename)$size == 0) {
       next

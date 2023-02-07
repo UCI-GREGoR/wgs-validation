@@ -9,6 +9,8 @@ def get_bedfile_from_name(wildcards, checkpoints, prefix):
         ).output[0],
         "r",
     ) as f:
+        if wildcards.subset_name == "all_background":
+            return "results/confident-regions/{}.bed".format(wildcards.region)
         for line in f.readlines():
             line_data = line.split("\t")
             if line_data[0].strip().rstrip() == wildcards.subset_name:
@@ -93,7 +95,14 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
     """
     pull data from checkpoint output
     """
-    res = []
+    res = [
+        "results/sv/{}/{}/{}/{}/all_background.between-svdb.vcf.gz.pwv_comparison".format(
+            wildcards.experimental,
+            wildcards.reference,
+            wildcards.region,
+            wildcards.stratification_set,
+        )
+    ]
     with open(
         checkpoints.happy_create_stratification_subset.get(
             genome_build=reference_build, stratification_set=wildcards.stratification_set
