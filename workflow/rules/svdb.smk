@@ -144,6 +144,16 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
                             line.split("\t")[0].strip().rstrip(),
                         )
                     )
+                elif wildcards.toolname == "svanalyzer":
+                    res.append(
+                        "results/svanalyzer/{}/{}/{}/{}/{}.report".format(
+                            wildcards.experimental,
+                            wildcards.reference,
+                            wildcards.region,
+                            wildcards.stratification_set,
+                            line.split("\t")[0].strip().rstrip(),
+                        )
+                    )
     return res
 
 

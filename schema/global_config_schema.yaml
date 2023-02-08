@@ -15,7 +15,7 @@ properties:
     pattern: "^grch[0-9]+$"
   sv-toolname:
     type: string
-    pattern: "^svdb$|^truvari$"
+    pattern: "^svdb$|^truvari$|^svanalyzer$"
   genomes:
     type: object
     patternProperties:
