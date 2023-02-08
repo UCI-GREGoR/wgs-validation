@@ -27,13 +27,14 @@ def wrap_remote_file(fn: str) -> str | AnnotatedString:
     return mapped_name
 
 
-def get_happy_output_files(
+def get_benchmarking_output_files(
     wildcards,
+    config,
     manifest_comparisons: pd.DataFrame,
 ) -> list:
     """
     Use configuration and manifest data to generate the set of comparisons
-    required for a full complement of hap.py runs.
+    required for a full complement of hap.py, truvari, etc. runs.
 
     Comparisons are specified as rows in manifest_comparisons. The entries in those
     two columns *should* exist as indices in the corresponding other manifests.
@@ -48,7 +49,7 @@ def get_happy_output_files(
         if wildcards.comparison in report.split(","):
             res.append(
                 "results/{}/{}/{}/{}/results.extended.csv".format(
-                    "happy" if comparison_type == "SNV" else "sv",
+                    "happy" if comparison_type == "SNV" else config["sv-toolname"],
                     experimental,
                     reference,
                     wildcards.region,

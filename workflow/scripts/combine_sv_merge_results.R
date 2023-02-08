@@ -1,3 +1,4 @@
+library(jsonlite)
 library(stringr)
 
 #' Combine data from postprocessed svdb merges into a single file in the
@@ -52,11 +53,11 @@ library(stringr)
 #' @param stratification.set character vector; name of NIST stratification sets. there
 #' should be at least one of these, but likely more
 #' @param output.csv character vector; name of output csv file
-run.combine.svdb.merge.results <- function(input.comparisons,
-                                           experimental.code,
-                                           reference.code,
-                                           confident.region,
-                                           output.csv) {
+run.combine.svdb <- function(input.comparisons,
+                             experimental.code,
+                             reference.code,
+                             confident.region,
+                             output.csv) {
   stopifnot(is.character(input.comparisons))
   stopifnot(is.character(experimental.code))
   stopifnot(is.character(reference.code))
@@ -119,12 +120,111 @@ run.combine.svdb.merge.results <- function(input.comparisons,
   }
 }
 
+
+#' Combine data from truvari into a single file in the
+#' same format as hap.py's output
+#'
+#' @details
+#' Files are jsons with the following entries:
+#' - TP-base
+#' - TP-call
+#' - FP
+#' - FN
+#' - precision
+#' - recall
+#' - f1
+#' - a bunch of other things that are very much ignored
+#'
+#' The output format is as follows. Note that the output headers are fixed requirements,
+#' though the order of columns is arbitrary.
+#' - Experimental: code of experimental dataset
+#' - Reference: code of reference dataset
+#' - Region: background for evaluation
+#' - Type: SNP, INDEL, or *. this may require some consideration, as the hap.py labels
+#'   for this category are obviously intended for a different purpose
+#' - Subset: name of bed regions for stratification
+#' - Filter: from vcf
+#' - METRIC.Recall
+#' - METRIC.Precision
+#' - METRIC.F1_Score
+#'
+#' @param input.comparisons character vector; name of input jsons from truvari
+#' @param experimental.code character vector; name of experimental dataset
+#' @param reference.code character vector; name of reference dataset
+#' @param confident.region character vector; name of confident calling region background
+#' @param stratification.set character vector; name of NIST stratification sets. there
+#' should be at least one of these, but likely more
+#' @param output.csv character vector; name of output csv file
+run.combine.truvari <- function(input.comparisons,
+                                experimental.code,
+                                reference.code,
+                                confident.region,
+                                output.csv) {
+  stopifnot(is.character(input.comparisons))
+  stopifnot(is.character(experimental.code))
+  stopifnot(is.character(reference.code))
+  stopifnot(is.character(confident.region))
+  stopifnot(is.character(output.csv))
+  stratification.set <- unname(sapply(basename(basename(input.comparisons)), function(i) {
+    strsplit(i, "\\.")[[1]][1]
+  }))
+  res <- data.frame()
+  for (i in seq_len(length(input.comparisons))) {
+    in.filename <- input.comparisons[i]
+    stratification <- stratification.set[i]
+    if (stratification == "all_background") {
+      stratification <- "*"
+    }
+    ## deal with the possibility that there are no variants in a stratification region
+    if (file.info(in.filename)$size == 0) {
+      next
+    }
+    h <- jsonlite::read_json(in.filename)
+    precision <- h$precision
+    recall <- h$recall
+    f1 <- h$f1
+
+    df <- data.frame(
+      Type = "SV",
+      Subset = stratification,
+      Filter = "PASS",
+      METRIC.Recall = recall,
+      METRIC.Precision = precision,
+      "METRIC.F1_Score" = f1,
+      check.names = FALSE
+    )
+    if (nrow(res) == 0) {
+      res <- df
+    } else {
+      res <- rbind(res, df)
+    }
+  }
+  if (nrow(res) == 0) {
+    file.create(output.csv)
+  } else {
+    write.table(res, output.csv, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = ",")
+  }
+}
+
 if (exists("snakemake")) {
-  run.combine.svdb.merge.results(
-    snakemake@input[["comparisons"]],
-    snakemake@params[["experimental"]],
-    snakemake@params[["reference"]],
-    snakemake@params[["region"]],
-    snakemake@output[["csv"]]
-  )
+  toolname <- snakemake@params[["toolname"]]
+  if (toolname == "svdb") {
+    run.combine.svdb(
+      snakemake@input[["comparisons"]],
+      snakemake@params[["experimental"]],
+      snakemake@params[["reference"]],
+      snakemake@params[["region"]],
+      snakemake@output[["csv"]]
+    )
+  } else if (toolname == "truvari") {
+    run.combine.truvari(
+      snakemake@input[["comparisons"]],
+      snakemake@params[["experimental"]],
+      snakemake@params[["reference"]],
+      snakemake@params[["region"]],
+      snakemake@output[["csv"]]
+    )
+  } else {
+    stop("Unrecognized tool name: ", toolname, sep = "")
+  }
 }

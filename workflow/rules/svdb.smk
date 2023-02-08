@@ -59,7 +59,7 @@ rule sv_svdb_across_datasets:
         experimental="results/experimentals/{region}/{setgroup}/{setname}/{experimental}.within-svdb.vcf.gz",
         reference="results/references/{region}/{setgroup}/{setname}/{reference}.within-svdb.vcf.gz",
     output:
-        "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
+        "results/svdb/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
     conda:
         "../envs/svdb.yaml"
     threads: 1
@@ -78,10 +78,10 @@ rule sv_summarize_variant_sources:
     selects `svdb_origin`, instead just opting to pattern match across all of INFO downstream.
     """
     input:
-        "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
+        "results/svdb/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
     output:
         temp(
-            "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz.pwv_comparison"
+            "results/svdb/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz.pwv_comparison"
         ),
     conda:
         "../envs/bcftools.yaml"
@@ -97,14 +97,25 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
     """
     pull data from checkpoint output
     """
-    res = [
-        "results/sv/{}/{}/{}/{}/all_background.between-svdb.vcf.gz.pwv_comparison".format(
-            wildcards.experimental,
-            wildcards.reference,
-            wildcards.region,
-            wildcards.stratification_set,
+    res = []
+    if wildcards.toolname == "svdb":
+        res.append(
+            "results/svdb/{}/{}/{}/{}/all_background.between-svdb.vcf.gz.pwv_comparison".format(
+                wildcards.experimental,
+                wildcards.reference,
+                wildcards.region,
+                wildcards.stratification_set,
+            )
         )
-    ]
+    elif wildcards.toolname == "truvari":
+        res.append(
+            "results/truvari/{}/{}/{}/{}/all_background/summary.txt".format(
+                wildcards.experimental,
+                wildcards.reference,
+                wildcards.region,
+                wildcards.stratification_set,
+            )
+        )
     with open(
         checkpoints.happy_create_stratification_subset.get(
             genome_build=reference_build, stratification_set=wildcards.stratification_set
@@ -113,15 +124,26 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
     ) as f:
         for line in f.readlines():
             if len(line.rstrip()) > 0:
-                res.append(
-                    "results/sv/{}/{}/{}/{}/{}.between-svdb.vcf.gz.pwv_comparison".format(
-                        wildcards.experimental,
-                        wildcards.reference,
-                        wildcards.region,
-                        wildcards.stratification_set,
-                        line.split("\t")[0].strip().rstrip(),
+                if wildcards.toolname == "svdb":
+                    res.append(
+                        "results/svdb/{}/{}/{}/{}/{}.between-svdb.vcf.gz.pwv_comparison".format(
+                            wildcards.experimental,
+                            wildcards.reference,
+                            wildcards.region,
+                            wildcards.stratification_set,
+                            line.split("\t")[0].strip().rstrip(),
+                        )
                     )
-                ),
+                elif wildcards.toolname == "truvari":
+                    res.append(
+                        "results/truvari/{}/{}/{}/{}/{}/summary.txt".format(
+                            wildcards.experimental,
+                            wildcards.reference,
+                            wildcards.region,
+                            wildcards.stratification_set,
+                            line.split("\t")[0].strip().rstrip(),
+                        )
+                    )
     return res
 
 
@@ -138,11 +160,12 @@ rule sv_combine_subsets:
             ),
         ),
     output:
-        csv="results/sv/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
+        csv="results/{toolname}/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
     params:
         experimental="{experimental}",
         reference="{reference}",
         region="{region}",
+        toolname="{toolname}",
     conda:
         "../envs/r.yaml"
     threads: 1
@@ -150,4 +173,4 @@ rule sv_combine_subsets:
         mem_mb="1000",
         qname="small",
     script:
-        "../scripts/combine_svdb_merge_results.R"
+        "../scripts/combine_sv_merge_results.R"

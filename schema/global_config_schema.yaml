@@ -13,6 +13,9 @@ properties:
   genome-build:
     type: string
     pattern: "^grch[0-9]+$"
+  sv-toolname:
+    type: string
+    pattern: "^svdb$|^truvari$"
   genomes:
     type: object
     patternProperties:

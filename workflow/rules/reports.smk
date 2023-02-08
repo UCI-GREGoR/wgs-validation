@@ -4,7 +4,9 @@ rule control_validation_report:
     from either hap.py or vcfeval
     """
     input:
-        csv=lambda wildcards: tc.get_happy_output_files(wildcards, manifest_comparisons),
+        csv=lambda wildcards: tc.get_benchmarking_output_files(
+            wildcards, config, manifest_comparisons
+        ),
         r_resources="workflow/scripts/control_validation.R",
     output:
         "results/reports/report_{comparison}_vs_region-{region}.html",
