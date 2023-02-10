@@ -16,6 +16,24 @@ properties:
   sv-toolname:
     type: string
     pattern: "^svdb$|^truvari$|^svanalyzer$"
+  sv-settings:
+    type: object
+    properties:
+      svanalyzer:
+        type: object
+        properties:
+          maxdist:
+            type: integer
+            min: 1
+          normshift:
+            type: number
+            min: 0.0
+            max: 0.0
+        required:
+          - maxdist
+          - normshift
+        additionalProperties: false
+    additionalProperties: false
   genomes:
     type: object
     patternProperties:
