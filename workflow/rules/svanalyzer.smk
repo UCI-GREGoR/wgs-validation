@@ -10,10 +10,22 @@ rule svanalyzer_run:
     Exposed parameters are (minimally) described at https://github.com/nhansen/SVanalyzer/blob/master/docs/svbenchmark.rst
     """
     input:
-        experimental="results/experimentals/{region}/{setgroup}/{setname}/{experimental}.within-svdb.vcf.gz",
-        experimental_tbi="results/experimentals/{region}/{setgroup}/{setname}/{experimental}.within-svdb.vcf.gz.tbi",
-        reference="results/references/{region}/{setgroup}/{setname}/{reference}.within-svdb.vcf.gz",
-        reference_tbi="results/references/{region}/{setgroup}/{setname}/{reference}.within-svdb.vcf.gz.tbi",
+        experimental=expand(
+            "results/experimentals/{{region}}/{{setgroup}}/{{setname}}/{{experimental}}.{filter_type}.vcf.gz",
+            filter_type=sv_experimental_filter_type,
+        ),
+        experimental_tbi=expand(
+            "results/experimentals/{{region}}/{{setgroup}}/{{setname}}/{{experimental}}.{filter_type}.vcf.gz.tbi",
+            filter_type=sv_experimental_filter_type,
+        ),
+        reference=expand(
+            "results/references/{{region}}/{{setgroup}}/{{setname}}/{{reference}}.{filter_type}.vcf.gz",
+            filter_type=sv_reference_filter_type,
+        ),
+        reference_tbi=expand(
+            "results/references/{{region}}/{{setgroup}}/{{setname}}/{{reference}}.{filter_type}.vcf.gz.tbi",
+            filter_type=sv_reference_filter_type,
+        ),
         fasta="results/{}/ref.fasta".format(reference_build),
         fai="results/{}/ref.fasta.fai".format(reference_build),
     output:

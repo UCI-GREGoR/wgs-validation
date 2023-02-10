@@ -17,6 +17,35 @@ rule tabix_index:
         "tabix -p vcf {input}"
 
 
+rule sv_within_dataset:
+    """
+    Filter svs with stratification regions, but don't run svdb to merge anything
+    """
+    input:
+        vcf="results/{dataset_type}/{dataset_name}.vcf.gz",
+        stratification_bed=lambda wildcards: get_bedfile_from_name(
+            wildcards,
+            checkpoints,
+            "results/stratification-sets/{}/subsets_for_happy/{{subset_group}}".format(
+                reference_build
+            ),
+        ),
+        region_bed="results/confident-regions/{region}.bed",
+    output:
+        temp(
+            "results/{dataset_type}/{region}/{subset_group}/{subset_name}/{dataset_name}.filtered-to-region.vcf.gz"
+        ),
+    conda:
+        "../envs/svdb.yaml"
+    threads: 1
+    resources:
+        mem_mb="8000",
+        qname="small",
+    shell:
+        "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
+        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header | bgzip -c > {output}"
+
+
 rule truvari_run:
     """
     Run truvari based on the documentation at
@@ -24,10 +53,22 @@ rule truvari_run:
     with certain modifications to reflect changes in the truvari interface.
     """
     input:
-        experimental="results/experimentals/{region}/{setgroup}/{setname}/{experimental}.within-svdb.vcf.gz",
-        experimental_tbi="results/experimentals/{region}/{setgroup}/{setname}/{experimental}.within-svdb.vcf.gz.tbi",
-        reference="results/references/{region}/{setgroup}/{setname}/{reference}.within-svdb.vcf.gz",
-        reference_tbi="results/references/{region}/{setgroup}/{setname}/{reference}.within-svdb.vcf.gz.tbi",
+        experimental=expand(
+            "results/experimentals/{{region}}/{{setgroup}}/{{setname}}/{{experimental}}.{filter_type}.vcf.gz",
+            filter_type=sv_experimental_filter_type,
+        ),
+        experimental_tbi=expand(
+            "results/experimentals/{{region}}/{{setgroup}}/{{setname}}/{{experimental}}.{filter_type}.vcf.gz.tbi",
+            filter_type=sv_experimental_filter_type,
+        ),
+        reference=expand(
+            "results/references/{{region}}/{{setgroup}}/{{setname}}/{{reference}}.{filter_type}.vcf.gz",
+            filter_type=sv_reference_filter_type,
+        ),
+        reference_tbi=expand(
+            "results/references/{{region}}/{{setgroup}}/{{setname}}/{{reference}}.{filter_type}.vcf.gz.tbi",
+            filter_type=sv_reference_filter_type,
+        ),
         fasta="results/{}/ref.fasta".format(reference_build),
         fai="results/{}/ref.fasta.fai".format(reference_build),
     output:

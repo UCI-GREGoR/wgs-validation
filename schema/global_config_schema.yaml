@@ -19,6 +19,10 @@ properties:
   sv-settings:
     type: object
     properties:
+      merge-experimental-before-comparison:
+        type: boolean
+      merge-reference-before-comparison:
+        type: boolean
       svanalyzer:
         type: object
         properties:
@@ -33,6 +37,9 @@ properties:
           - maxdist
           - normshift
         additionalProperties: false
+    required:
+      - merge-experimental-before-comparison
+      - merge-reference-before-comparison
     additionalProperties: false
   genomes:
     type: object
