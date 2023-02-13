@@ -165,9 +165,7 @@ run.combine.truvari <- function(input.comparisons,
   stopifnot(is.character(reference.code))
   stopifnot(is.character(confident.region))
   stopifnot(is.character(output.csv))
-  stratification.set <- unname(sapply(basename(basename(input.comparisons)), function(i) {
-    strsplit(i, "\\.")[[1]][1]
-  }))
+  stratification.set <- basename(dirname(input.comparisons))
   res <- data.frame()
   for (i in seq_len(length(input.comparisons))) {
     in.filename <- input.comparisons[i]
