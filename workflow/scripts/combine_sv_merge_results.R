@@ -181,7 +181,15 @@ run.combine.truvari <- function(input.comparisons,
     precision <- h$precision
     recall <- h$recall
     f1 <- h$f1
-
+    if (is.null(precision)) {
+      precision <- NA
+    }
+    if (is.null(recall)) {
+      recall <- NA
+    }
+    if (is.null(f1)) {
+      f1 <- NA
+    }
     df <- data.frame(
       Type = "SV",
       Subset = stratification,
