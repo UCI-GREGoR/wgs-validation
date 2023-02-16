@@ -109,7 +109,7 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
         )
     elif wildcards.toolname == "truvari":
         res.append(
-            "results/truvari/{}/{}/{}/{}/all_background/summary.txt".format(
+            "results/truvari/{}/{}/{}/{}/all_background/summary.json".format(
                 wildcards.experimental,
                 wildcards.reference,
                 wildcards.region,
@@ -136,7 +136,7 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
                     )
                 elif wildcards.toolname == "truvari":
                     res.append(
-                        "results/truvari/{}/{}/{}/{}/{}/summary.txt".format(
+                        "results/truvari/{}/{}/{}/{}/{}/summary.json".format(
                             wildcards.experimental,
                             wildcards.reference,
                             wildcards.region,
