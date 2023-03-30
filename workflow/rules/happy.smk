@@ -67,7 +67,7 @@ rule happy_run:
     threads: 4
     resources:
         qname="small",
-        mem_mb="64000",
+        mem_mb=64000,
         tmpdir=lambda wildcards: "temp/happy/{}/{}/{}/{}".format(
             wildcards.experimental,
             wildcards.reference,
@@ -98,7 +98,6 @@ rule add_region_name:
         temp(
             "results/{comparison_type,[^/]+}/{experimental}/{reference}/{region,[^/]+}/{stratification_set,[^/]+}/results.extended.annotated.csv"
         ),
-    threads: 1
     shell:
         "cat {input} | "
         "awk -v ex={wildcards.experimental} -v ref={wildcards.reference} -v reg={wildcards.region} "
@@ -120,6 +119,5 @@ rule combine_results:
         "results/{comparison_type,[^/]+}/{experimental,[^/]+}/{reference,[^/]+}/{region,[^/]+}/results.extended.csv",
     benchmark:
         "results/performance_benchmarks/{comparison_type}_combine_results/{experimental}/{reference}/{region}/results.tsv"
-    threads: 1
     shell:
         "cat {input} | awk 'NR == 1 || ! /^Experimental,Reference,Region,/' > {output}"
