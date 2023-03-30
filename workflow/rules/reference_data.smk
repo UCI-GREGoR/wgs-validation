@@ -24,7 +24,7 @@ checkpoint get_stratification_bedfiles:
     threads: 1
     resources:
         qname="small",
-        mem_mb="2000",
+        mem_mb=2000,
     shell:
         "mkdir -p {params.outdir} && "
         "lftp -c 'set ftp:list-options -a; "
@@ -47,7 +47,7 @@ rule acquire_confident_regions:
     threads: 1
     resources:
         qname="small",
-        mem_mb="2000",
+        mem_mb=2000,
     shell:
         "cp {input} {output}"
 
@@ -65,7 +65,7 @@ rule acquire_fasta:
     threads: 1
     resources:
         qname="small",
-        mem_mb="2000",
+        mem_mb=2000,
     shell:
         'if [[ "{params.source}" = *".gz" ]] ; then gunzip -c {input} > {output} ; else cp {input} {output} ; fi'
 
@@ -84,7 +84,7 @@ rule create_fai:
         "../envs/samtools.yaml"
     threads: 1
     resources:
-        mem_mb="4000",
+        mem_mb=4000,
         qname="small",
     shell:
         "samtools faidx {input}"
@@ -105,6 +105,6 @@ rule create_sdf:
     threads: 1
     resources:
         qname="small",
-        mem_mb="16000",
+        mem_mb=16000,
     shell:
         "rtg RTG_MEM=12G format -f fasta -o {output} {input}"

@@ -14,7 +14,7 @@ rule vcfeval_run:
     threads: 1
     resources:
         qname="small",
-        mem_mb="8000",
+        mem_mb=8000,
     shell:
         "rtg vcfeval --baseline={input.reference} --calls={input.experimental} --template={input.sdf} "
         "--output-mode=annotate --output={output} --Xtwo-pass=False --ref-overlap"

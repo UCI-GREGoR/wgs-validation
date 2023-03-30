@@ -40,7 +40,7 @@ rule sv_svdb_within_dataset:
         "../envs/svdb.yaml"
     threads: 1
     resources:
-        mem_mb="8000",
+        mem_mb=8000,
         qname="small",
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
@@ -62,7 +62,7 @@ rule sv_svdb_across_datasets:
         "../envs/svdb.yaml"
     threads: 1
     resources:
-        mem_mb="8000",
+        mem_mb=8000,
         qname="small",
     shell:
         "svdb --merge --vcf {input} | bgzip -c > {output}"
@@ -83,7 +83,7 @@ rule sv_summarize_variant_sources:
         "../envs/bcftools.yaml"
     threads: 1
     resources:
-        mem_mb="2000",
+        mem_mb=2000,
         qname="small",
     shell:
         "bcftools query -f '%CHROM\\t%POS\\t%ID\\t%REF\\t%ALT\\t%QUAL\\t%FILTER\\t%INFO/SVTYPE\\t%INFO/svdb_origin\\n' {input} > {output}"
@@ -136,7 +136,7 @@ rule sv_combine_subsets:
         "../envs/r.yaml"
     threads: 1
     resources:
-        mem_mb="1000",
+        mem_mb=1000,
         qname="small",
     script:
         "../scripts/combine_svdb_merge_results.R"
