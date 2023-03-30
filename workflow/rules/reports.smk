@@ -24,6 +24,6 @@ rule control_validation_report:
     threads: 1
     resources:
         qname="small",
-        mem_mb="4000",
+        mem_mb=4000,
     script:
         "../scripts/control_validation.Rmd"
