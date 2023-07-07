@@ -21,6 +21,7 @@ checkpoint get_stratification_bedfiles:
         "results/performance_benchmarks/get_stratification_bedfiles/{genome_build}/results.tsv"
     conda:
         "../envs/lftp.yaml"
+    priority: 1
     threads: 1
     resources:
         qname="small",
