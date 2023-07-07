@@ -170,7 +170,7 @@ rule sv_combine_subsets:
             ),
         ),
     output:
-        csv="results/{toolname}/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
+        csv="results/{toolname,svdb|truvari|svanalyzer}/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
     params:
         experimental="{experimental}",
         reference="{reference}",
