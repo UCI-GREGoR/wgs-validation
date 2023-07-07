@@ -51,7 +51,7 @@ rule svanalyzer_run:
         "../envs/svanalyzer.yaml"
     threads: 1
     resources:
-        mem_mb="8000",
+        mem_mb=8000,
         qname="small",
     shell:
         "svanalyzer benchmark --ref {input.fasta} --test {input.experimental} --truth {input.reference} "

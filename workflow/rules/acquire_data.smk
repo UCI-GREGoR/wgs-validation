@@ -14,7 +14,7 @@ rule download_reference_data:
     threads: 1
     resources:
         qname="small",
-        mem_mb="1000",
+        mem_mb=1000,
     shell:
         "if [[ {params} = s3://* ]] ; then "
         "aws s3 cp {input} {output} ; "

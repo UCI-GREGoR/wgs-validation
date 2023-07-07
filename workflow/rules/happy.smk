@@ -67,7 +67,7 @@ rule happy_run:
     threads: 4
     resources:
         qname="small",
-        mem_mb="64000",
+        mem_mb=64000,
         tmpdir=lambda wildcards: "temp/happy/{}/{}/{}/{}".format(
             wildcards.experimental,
             wildcards.reference,

@@ -11,7 +11,7 @@ rule tabix_index:
         "../envs/bcftools.yaml"
     threads: 1
     resources:
-        mem_mb="2000",
+        mem_mb=2000,
         qname="small",
     shell:
         "tabix -p vcf {input}"
@@ -39,7 +39,7 @@ rule sv_within_dataset:
         "../envs/svdb.yaml"
     threads: 1
     resources:
-        mem_mb="8000",
+        mem_mb=8000,
         qname="small",
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
@@ -121,7 +121,7 @@ rule truvari_bench:
         "../envs/truvari.yaml"
     threads: 1
     resources:
-        mem_mb="8000",
+        mem_mb=8000,
         qname="small",
     shell:
         "rm -Rf {params.outdir} && "
@@ -165,7 +165,7 @@ rule truvari_refine:
         "../envs/truvari.yaml"
     threads: 1
     resources:
-        mem_mb="24000",
+        mem_mb=24000,
         qname="small",
     shell:
         "rm -Rf {params.outdir}/phab && "
