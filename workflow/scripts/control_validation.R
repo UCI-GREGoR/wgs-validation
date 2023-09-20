@@ -148,7 +148,7 @@ make.plot <- function(plot.data, data.panels, data.subset, data.label = NULL) {
 #'
 #' @param plot.data data frame of input data
 #' aggregated across hap.py csv output
-#' @param variant.typees character vector, either SNP or INDEL or both
+#' @param variant.types character vector, either SNP or INDEL or both
 #' @param targets character vector; entries
 #' are "Subset", names are human-legible labels
 #' @return kable of report data
@@ -187,7 +187,7 @@ make.table <- function(plot.data, variant.types, targets) {
   res <- variants.final[[1]]
   if (length(variants.final) > 1) {
     for (i in seq(2, length(variants.final))) {
-      res <- rbind(res, variants.final[[i]][, 3:5])
+      res <- cbind(res, variants.final[[i]][, 3:5])
     }
   }
   for (i in seq(3, ncol(res))) {

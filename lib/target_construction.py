@@ -95,7 +95,7 @@ def get_variant_types(manifest_comparisons: pd.DataFrame, comparison: str) -> li
                 res.append("SV")
             elif comparison_type == "SNV":
                 res.append("SNP")
-                res.append("Indel")
+                res.append("INDEL")
             else:
                 raise ValueError('Unrecognized comparison type: "{}"'.format(comparison_type))
     return list(set(res))
