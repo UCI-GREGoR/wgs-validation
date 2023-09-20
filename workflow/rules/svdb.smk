@@ -9,6 +9,8 @@ def get_bedfile_from_name(wildcards, checkpoints, prefix):
         ).output[0],
         "r",
     ) as f:
+        if wildcards.subset_name == "all_background":
+            return "results/confident-regions/{}.bed".format(wildcards.region)
         for line in f.readlines():
             line_data = line.split("\t")
             if line_data[0].strip().rstrip() == wildcards.subset_name:
@@ -57,7 +59,7 @@ rule sv_svdb_across_datasets:
         experimental="results/experimentals/{region}/{setgroup}/{setname}/{experimental}.within-svdb.vcf.gz",
         reference="results/references/{region}/{setgroup}/{setname}/{reference}.within-svdb.vcf.gz",
     output:
-        "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
+        "results/svdb/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
     conda:
         "../envs/svdb.yaml"
     threads: 1
@@ -71,13 +73,15 @@ rule sv_svdb_across_datasets:
 rule sv_summarize_variant_sources:
     """
     Given a vcf that's been passed through svdb, use bcftools to extract
-    summary data
+    summary data. It turns out that the way svdb emits tracking data creates
+    problematic information that bcftools doesn't love. As such, this no longer
+    selects `svdb_origin`, instead just opting to pattern match across all of INFO downstream.
     """
     input:
-        "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
+        "results/svdb/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
     output:
         temp(
-            "results/sv/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz.pwv_comparison"
+            "results/svdb/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz.pwv_comparison"
         ),
     conda:
         "../envs/bcftools.yaml"
@@ -86,7 +90,7 @@ rule sv_summarize_variant_sources:
         mem_mb=2000,
         qname="small",
     shell:
-        "bcftools query -f '%CHROM\\t%POS\\t%ID\\t%REF\\t%ALT\\t%QUAL\\t%FILTER\\t%INFO/SVTYPE\\t%INFO/svdb_origin\\n' {input} > {output}"
+        "bcftools query -f '%CHROM\\t%POS\\t%ID\\t%REF\\t%ALT\\t%QUAL\\t%FILTER\\t%INFO/SVTYPE\\t%INFO\\n' {input} > {output}"
 
 
 def find_datasets_in_subset(wildcards, checkpoints, prefix):
@@ -94,6 +98,24 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
     pull data from checkpoint output
     """
     res = []
+    if wildcards.toolname == "svdb":
+        res.append(
+            "results/svdb/{}/{}/{}/{}/all_background.between-svdb.vcf.gz.pwv_comparison".format(
+                wildcards.experimental,
+                wildcards.reference,
+                wildcards.region,
+                wildcards.stratification_set,
+            )
+        )
+    elif wildcards.toolname == "truvari":
+        res.append(
+            "results/truvari/{}/{}/{}/{}/all_background/summary.json".format(
+                wildcards.experimental,
+                wildcards.reference,
+                wildcards.region,
+                wildcards.stratification_set,
+            )
+        )
     with open(
         checkpoints.happy_create_stratification_subset.get(
             genome_build=reference_build, stratification_set=wildcards.stratification_set
@@ -102,15 +124,36 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix):
     ) as f:
         for line in f.readlines():
             if len(line.rstrip()) > 0:
-                res.append(
-                    "results/sv/{}/{}/{}/{}/{}.between-svdb.vcf.gz.pwv_comparison".format(
-                        wildcards.experimental,
-                        wildcards.reference,
-                        wildcards.region,
-                        wildcards.stratification_set,
-                        line.split("\t")[0].strip().rstrip(),
+                if wildcards.toolname == "svdb":
+                    res.append(
+                        "results/svdb/{}/{}/{}/{}/{}.between-svdb.vcf.gz.pwv_comparison".format(
+                            wildcards.experimental,
+                            wildcards.reference,
+                            wildcards.region,
+                            wildcards.stratification_set,
+                            line.split("\t")[0].strip().rstrip(),
+                        )
                     )
-                ),
+                elif wildcards.toolname == "truvari":
+                    res.append(
+                        "results/truvari/{}/{}/{}/{}/{}/summary.json".format(
+                            wildcards.experimental,
+                            wildcards.reference,
+                            wildcards.region,
+                            wildcards.stratification_set,
+                            line.split("\t")[0].strip().rstrip(),
+                        )
+                    )
+                elif wildcards.toolname == "svanalyzer":
+                    res.append(
+                        "results/svanalyzer/{}/{}/{}/{}/{}.report".format(
+                            wildcards.experimental,
+                            wildcards.reference,
+                            wildcards.region,
+                            wildcards.stratification_set,
+                            line.split("\t")[0].strip().rstrip(),
+                        )
+                    )
     return res
 
 
@@ -127,11 +170,12 @@ rule sv_combine_subsets:
             ),
         ),
     output:
-        csv="results/sv/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
+        csv="results/{toolname,svdb|truvari|svanalyzer}/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
     params:
         experimental="{experimental}",
         reference="{reference}",
         region="{region}",
+        toolname="{toolname}",
     conda:
         "../envs/r.yaml"
     threads: 1
@@ -139,4 +183,4 @@ rule sv_combine_subsets:
         mem_mb=1000,
         qname="small",
     script:
-        "../scripts/combine_svdb_merge_results.R"
+        "../scripts/combine_sv_merge_results.R"

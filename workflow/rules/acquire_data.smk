@@ -15,7 +15,6 @@ rule download_reference_data:
     resources:
         qname="small",
         mem_mb=1000,
-        disk_mb=8000,
     shell:
         "if [[ {params} = s3://* ]] ; then "
         "aws s3 cp {input} {output} ; "

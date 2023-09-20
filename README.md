@@ -29,6 +29,10 @@ The following settings are recognized in `config/config.yaml`.
 - `reference-manifest`: relative path to manifest of reference (i.e. "gold standard") vcfs
 - `comparisons-manifest`: relative path to manifest of desired experimental/reference comparisons
 - `happy-bedfiles-per-stratification`: how many stratification region sets should be dispatched to a single hap.py job. hap.py is a resource hog, and a relatively small number of stratification sets to the same run can cause it to explode. a setting of no more that 6 has worked in the past, though that was in a different setting
+- `sv-settings`: configuration settings for SV comparisons and SV-specific tools
+  - `merge-experimental-before-comparison`: whether to use SVDB to combine variants within a single experimental sample vcf before comparison
+  - `merge-reference-before-comparison`: whether to use SVDB to combine variants within a single reference sample vcf before comparison
+  - `svanalyzer`: settings specific to `svanalyzer`. see [svanalyzer project](https://github.com/nhansen/SVanalyzer/blob/master/docs/svbenchmark.rst) for parameter documentation
 - `genome-build`: desired genome reference build for the comparisons. referenced by aliases specified in `genomes` block
 - `genomes`: an arbitrary set of reference genome specifications. intended to be assigned tags such as `grch38`, `grch37`, etc. within each block:
   - `fasta`: path to genome fasta corresponding to this build. can be a path to a local file, or an http/ftp link, or an s3 path

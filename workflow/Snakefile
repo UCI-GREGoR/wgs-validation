@@ -34,6 +34,16 @@ manifest_reference = pd.read_csv(manifest_reference, sep="\t").set_index(
 )
 manifest_comparisons = pd.read_csv(manifest_comparisons, sep="\t")
 reference_build = config["genome-build"]
+sv_reference_filter_type = (
+    "within-svdb"
+    if config["sv-settings"]["merge-reference-before-comparison"]
+    else "filtered-to-region"
+)
+sv_experimental_filter_type = (
+    "within-svdb"
+    if config["sv-settings"]["merge-experimental-before-comparison"]
+    else "filtered-to-region"
+)
 
 
 validate(manifest_experiment, "../schema/experiment_manifest_schema.yaml")
@@ -53,5 +63,7 @@ include: "rules/acquire_data.smk"
 include: "rules/happy.smk"
 include: "rules/reference_data.smk"
 include: "rules/reports.smk"
+include: "rules/svanalyzer.smk"
 include: "rules/svdb.smk"
+include: "rules/truvari.smk"
 include: "rules/vcfeval.smk"

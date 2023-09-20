@@ -27,13 +27,14 @@ def wrap_remote_file(fn: str) -> str | AnnotatedString:
     return mapped_name
 
 
-def get_happy_output_files(
+def get_benchmarking_output_files(
     wildcards,
+    config,
     manifest_comparisons: pd.DataFrame,
 ) -> list:
     """
     Use configuration and manifest data to generate the set of comparisons
-    required for a full complement of hap.py runs.
+    required for a full complement of hap.py, truvari, etc. runs.
 
     Comparisons are specified as rows in manifest_comparisons. The entries in those
     two columns *should* exist as indices in the corresponding other manifests.
@@ -48,7 +49,7 @@ def get_happy_output_files(
         if wildcards.comparison in report.split(","):
             res.append(
                 "results/{}/{}/{}/{}/results.extended.csv".format(
-                    "happy" if comparison_type == "SNV" else "sv",
+                    "happy" if comparison_type == "SNV" else config["sv-toolname"],
                     experimental,
                     reference,
                     wildcards.region,
@@ -77,6 +78,26 @@ def get_happy_comparison_subjects(
                     manifest_experiment["experimental_dataset"] == experimental, "replicate"
                 ].to_list()
             )
+    return list(set(res))
+
+
+def get_variant_types(manifest_comparisons: pd.DataFrame, comparison: str) -> list:
+    """
+    Determine the variant types that should be queried from hap.py output files
+    based on requested comparison type
+    """
+    res = []
+    for report, comparison_type in zip(
+        manifest_comparisons["report"], manifest_comparisons["comparison_type"]
+    ):
+        if comparison in report.split(","):
+            if comparison_type == "SV":
+                res.append("SV")
+            elif comparison_type == "SNV":
+                res.append("SNP")
+                res.append("INDEL")
+            else:
+                raise ValueError('Unrecognized comparison type: "{}"'.format(comparison_type))
     return list(set(res))
 
 
