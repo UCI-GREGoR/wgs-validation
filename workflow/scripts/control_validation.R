@@ -1,3 +1,5 @@
+library(ggplot2, quietly = TRUE)
+
 #' Set common ggplot2 theme data for plots
 my.theme <- theme_light() + theme(
   plot.title = element_text(size = 16, hjust = 0.5),
