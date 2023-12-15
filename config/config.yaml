@@ -39,6 +39,7 @@ genomes:
     stratification-regions:
       ftp: "ftp-trace.ncbi.nlm.nih.gov"
       dir: "ReferenceSamples/giab/release/genome-stratifications/v3.1/GRCh38"
+      all-stratifications: "v3.1-GRCh38-all-stratifications.tsv"
       region-definitions:
         - name: "*"
           label: "All available variants"

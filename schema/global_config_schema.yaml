@@ -69,6 +69,8 @@ properties:
                 type: string
               dir:
                 type: string
+              all-stratifications:
+                type: string
               region-definitions:
                 type: array
                 items:
@@ -88,6 +90,7 @@ properties:
             required:
               - ftp
               - dir
+              - all-stratifications
               - region-definitions
             additionalProperties: no
         required:
