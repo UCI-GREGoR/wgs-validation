@@ -50,8 +50,6 @@ library(stringr)
 #' @param experimental.code character vector; name of experimental dataset
 #' @param reference.code character vector; name of reference dataset
 #' @param confident.region character vector; name of confident calling region background
-#' @param stratification.set character vector; name of NIST stratification sets. there
-#' should be at least one of these, but likely more
 #' @param output.csv character vector; name of output csv file
 run.combine.svdb <- function(input.comparisons,
                              experimental.code,
@@ -152,8 +150,6 @@ run.combine.svdb <- function(input.comparisons,
 #' @param experimental.code character vector; name of experimental dataset
 #' @param reference.code character vector; name of reference dataset
 #' @param confident.region character vector; name of confident calling region background
-#' @param stratification.set character vector; name of NIST stratification sets. there
-#' should be at least one of these, but likely more
 #' @param output.csv character vector; name of output csv file
 run.combine.truvari <- function(input.comparisons,
                                 experimental.code,
@@ -239,8 +235,6 @@ run.combine.truvari <- function(input.comparisons,
 #' @param experimental.code character vector; name of experimental dataset
 #' @param reference.code character vector; name of reference dataset
 #' @param confident.region character vector; name of confident calling region background
-#' @param stratification.set character vector; name of NIST stratification sets. there
-#' should be at least one of these, but likely more
 #' @param output.csv character vector; name of output csv file
 run.combine.svanalyzer <- function(input.comparisons,
                                    experimental.code,
@@ -309,33 +303,45 @@ run.combine.svanalyzer <- function(input.comparisons,
     write.table(res, output.csv, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = ",")
   }
 }
-if (exists("snakemake")) {
-  toolname <- snakemake@params[["toolname"]]
+
+#' Dispatch combination tasks based on requested tool.
+#' Split out into a separate function to enable testing.
+#'
+#' @param toolname character; name of comparison tool
+#' @param input.comparisons character vector; name of input jsons from truvari
+#' @param experimental.code character vector; name of experimental dataset
+#' @param reference.code character vector; name of reference dataset
+#' @param confident.region character vector; name of confident calling region background
+#' @param output.csv character vector; name of output csv file
+run.combine <- function(toolname,
+                        input.comparisons,
+                        experimental.code,
+                        reference.code,
+                        confident.region,
+                        output.csv) {
+  fxn <- NULL
   if (toolname == "svdb") {
-    run.combine.svdb(
-      snakemake@input[["comparisons"]],
-      snakemake@params[["experimental"]],
-      snakemake@params[["reference"]],
-      snakemake@params[["region"]],
-      snakemake@output[["csv"]]
-    )
+    fxn <- run.combine.svdb
   } else if (toolname == "truvari") {
-    run.combine.truvari(
-      snakemake@input[["comparisons"]],
-      snakemake@params[["experimental"]],
-      snakemake@params[["reference"]],
-      snakemake@params[["region"]],
-      snakemake@output[["csv"]]
-    )
+    fxn <- run.combine.truvari
   } else if (toolname == "svanalyzer") {
-    run.combine.svanalyzer(
-      snakemake@input[["comparisons"]],
-      snakemake@params[["experimental"]],
-      snakemake@params[["reference"]],
-      snakemake@params[["region"]],
-      snakemake@output[["csv"]]
-    )
+    fxn <- run.combine.svanalyzer
   } else {
     stop("Unrecognized tool name: ", toolname, sep = "")
   }
+  fxn(
+    toolname, input.comparisons, experimental.code,
+    reference.code, confident.region, output.csv
+  )
+}
+
+if (exists("snakemake")) {
+  run.combine(
+    snakemake@params[["toolname"]],
+    snakemake@input[["comparisons"]],
+    snakemake@params[["experimental"]],
+    snakemake@params[["reference"]],
+    snakemake@params[["region"]],
+    snakemake@output[["csv"]]
+  )
 }
