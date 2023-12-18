@@ -69,32 +69,19 @@ def test_map_reference_file_ftp():
     assert observed == expected
 
 
-def test_get_happy_output_files(wildcards_for_report, manifest_comparisons):
-    """
-    Test that get_happy_output_files successfully populates all post-hap.py
-    merged csv files
-    """
-    expected = [
-        "results/happy/exp1/ref1/back1/results.extended.csv",
-        "results/happy/exp1/ref2/back1/results.extended.csv",
-    ]
-    observed = tc.get_happy_output_files(wildcards_for_report, manifest_comparisons)
-    assert observed == expected
-
-
-def test_construct_targets(config, manifest_comparisons):
+def test_construct_targets(config, manifest_experiment, manifest_comparisons):
     """
     Test that construct_targets successfully populates all final reports
     """
     expected = [
-        "results/reports/control_validation_comparison-{}_vs_region-{}.html".format(x[0], x[1])
+        "results/reports/report_{}_vs_region-{}.html".format(x[0], x[1])
         for x in zip(
             ["comp1", "comp2", "comp3", "comp1", "comp2", "comp3"],
             ["reg3", "reg3", "reg3", "reg4", "reg4", "reg4"],
         )
     ]
     expected.sort()
-    observed = tc.construct_targets(config, manifest_comparisons)
+    observed = tc.construct_targets(config, manifest_experiment, manifest_comparisons)
     assert observed == expected
 
 
