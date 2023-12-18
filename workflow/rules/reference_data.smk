@@ -66,36 +66,32 @@ rule acquire_confident_regions:
     """
     Get a confident region bedfile from somewhere
     """
-    input:
-        lambda wildcards: tc.wrap_remote_file(
-            config["genomes"][reference_build]["confident-regions"][wildcards.region]["bed"]
-        ),
     output:
-        "results/confident-regions/{region}.bed",
+        final="results/confident-regions/{region}.bed",
+        tmp=temp("results/confident-regions/.{region}.bed.tmp"),
+    params:
+        source=lambda wildcards: config["genomes"][reference_build]["confident-regions"][
+            wildcards.region
+        ]["bed"],
     threads: 1
     resources:
         qname="small",
         mem_mb=2000,
     shell:
-        "cp {input} {output}"
+        "if [[ {params.source} = s3://* ]] ; then "
+        "aws s3 cp {input} {output.tmp} ; "
+        "elif [[ {params.source} = ftp://* ]] || [[ {params.source} = https://* ]] || [[ {params.source} = http://* ]] ; then "
+        "wget -O {output.tmp} {params.source} ; "
+        "else cp {params.source} {output.tmp} ; fi && "
+        'if [[ "{params.source}" = *".gz" ]] ; then gunzip -c {output.tmp} > {output.final} ; else cp {output.tmp} {output.final} ; fi'
 
 
-rule acquire_fasta:
-    """
-    Get a reference genome fasta from a remote source
-    """
-    input:
-        lambda wildcards: tc.wrap_remote_file(config["genomes"][wildcards.genome]["fasta"]),
+use rule acquire_confident_regions as acquire_fasta with:
     output:
-        "results/{genome}/ref.fasta",
+        final="results/{genome}/ref.fasta",
+        tmp=temp("results/{genome}/.ref.fasta.tmp"),
     params:
         source=lambda wildcards: config["genomes"][wildcards.genome]["fasta"],
-    threads: 1
-    resources:
-        qname="small",
-        mem_mb=2000,
-    shell:
-        'if [[ "{params.source}" = *".gz" ]] ; then gunzip -c {input} > {output} ; else cp {input} {output} ; fi'
 
 
 rule create_fai:
