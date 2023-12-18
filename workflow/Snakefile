@@ -51,6 +51,7 @@ validate(manifest_experiment, "../schema/experiment_manifest_schema.yaml")
 validate(manifest_reference, "../schema/reference_manifest_schema.yaml")
 validate(manifest_comparisons, "../schema/comparisons_manifest_schema.yaml")
 
+ctf.update_analysis_tracking_files(config, "results")
 
 TARGETS = (tc.construct_targets(config, manifest_experiment, manifest_comparisons),)
 
