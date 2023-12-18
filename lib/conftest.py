@@ -12,7 +12,19 @@ def config():
         "genome-build": "grch100",
         "genomes": {
             "grch99": {"confident-regions": {"reg1": "file1", "reg2": "file2"}},
-            "grch100": {"confident-regions": {"reg3": "file3", "reg4": "file4"}},
+            "grch100": {
+                "confident-regions": {"reg3": "file3", "reg4": "file4"},
+                "stratification-regions": {
+                    "ftp": "ftp://target",
+                    "dir": "ftpdir",
+                    "all-stratifications": "vWhatever.all-stratifications.tsv",
+                    "region-definitions": [
+                        {"name": "*", "label": "everybody", "inclusion": ".*"},
+                        {"name": "name1", "label": "some1", "inclusion": ".*"},
+                        {"name": "name2", "label": "some2", "inclusion": ".*"},
+                    ],
+                },
+            },
         },
     }
     return res

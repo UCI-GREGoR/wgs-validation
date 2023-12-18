@@ -184,7 +184,7 @@ def get_happy_stratification_by_index(wildcards, config, checkpoints):
     beds_per_set = config["happy-bedfiles-per-stratification"]
     regions = []
     with open(
-        checkpoints.get_stratification_bedfiles.get(genome_build=config["genome-build"]).output[0],
+        checkpoints.get_stratification_files.get(genome_build=config["genome-build"]).output[0],
         "r",
     ) as f:
         regions = f.readlines()
@@ -206,7 +206,7 @@ def get_happy_stratification_set_indices(wildcards, config, checkpoints):
     beds_per_set = config["happy-bedfiles-per-stratification"]
     regions = []
     with open(
-        checkpoints.get_stratification_bedfiles.get(genome_build=config["genome-build"]).output[0],
+        checkpoints.get_stratification_files.get(genome_build=config["genome-build"]).output[0],
         "r",
     ) as f:
         regions = f.readlines()

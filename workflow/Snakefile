@@ -12,6 +12,7 @@ S3 = S3RemoteProvider()
 
 sys.path.insert(0, ".")
 from lib import target_construction as tc
+from lib import config_tracking_files as ctf
 
 shell.executable("/bin/bash")
 shell.prefix("set -euo pipefail; ")

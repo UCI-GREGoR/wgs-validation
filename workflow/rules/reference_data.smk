@@ -1,4 +1,4 @@
-checkpoint get_stratification_linker:
+checkpoint get_stratification_files:
     """
     Get directory of NIST/Zook stratification regions.
 
@@ -13,6 +13,8 @@ checkpoint get_stratification_linker:
     a subset of files to pull in the second lftp command. This should substantially reduce
     the number of transferred files in most cases.
     """
+    input:
+        trackers=lambda wildcards: ctf.get_ftp_tracking_files(config, "results"),
     output:
         tsv="results/stratification-sets/{genome_build}/stratification_regions.tsv",
         query=temp("results/stratification-sets/{genome_build}/stratification_regions_query.tsv"),
@@ -39,7 +41,7 @@ checkpoint get_stratification_linker:
             ]
         ),
     benchmark:
-        "results/performance_benchmarks/get_stratification_bedfiles/{genome_build}/results.tsv"
+        "results/performance_benchmarks/get_stratification_files/{genome_build}/results.tsv"
     conda:
         "../envs/lftp.yaml"
     priority: 1
