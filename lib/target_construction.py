@@ -182,20 +182,34 @@ def get_happy_stratification_by_index(wildcards, config, checkpoints):
     return the list of implicated entries.
     """
     beds_per_set = config["happy-bedfiles-per-stratification"]
-    regions = []
-    with open(
-        checkpoints.get_stratification_bedfiles.get(genome_build=config["genome-build"]).output[0],
-        "r",
-    ) as f:
-        regions = f.readlines()
-    lines = [
-        regions[i].replace("\t", "\t../../")
-        for i in range(
-            int(wildcards.stratification_set) * beds_per_set,
-            min((int(wildcards.stratification_set) + 1) * beds_per_set, len(regions)),
+    stratification_sets = [
+        x["name"]
+        for x in filter(
+            lambda z: z["name"] != "*",
+            config["genomes"][config["genome-build"]]["stratification-regions"][
+                "region-definitions"
+            ],
         )
     ]
-    return lines
+    regions = pd.read_table(
+        checkpoints.get_stratification_files.get(genome_build=config["genome-build"]).output[0],
+        header=None,
+        names=["key", "path"],
+    ).set_index("key", drop=False)
+    lines = [
+        "{}\\tresults/stratification-sets/{}/{}".format(x, config["genome-build"], y)
+        for x, y in zip(
+            regions.loc[stratification_sets, "key"], regions.loc[stratification_sets, "path"]
+        )
+    ]
+    lines = [
+        lines[i]
+        for i in range(
+            int(wildcards.stratification_set) * beds_per_set,
+            min((int(wildcards.stratification_set) + 1) * beds_per_set, len(lines)),
+        )
+    ]
+    return "\\n".join(lines)
 
 
 def get_happy_stratification_set_indices(wildcards, config, checkpoints):
@@ -204,10 +218,19 @@ def get_happy_stratification_set_indices(wildcards, config, checkpoints):
     be used as intermediate names for the region files during DAG construction.
     """
     beds_per_set = config["happy-bedfiles-per-stratification"]
-    regions = []
-    with open(
-        checkpoints.get_stratification_bedfiles.get(genome_build=config["genome-build"]).output[0],
-        "r",
-    ) as f:
-        regions = f.readlines()
+    stratification_sets = [
+        x["name"]
+        for x in filter(
+            lambda z: z["name"] != "*",
+            config["genomes"][config["genome-build"]]["stratification-regions"][
+                "region-definitions"
+            ],
+        )
+    ]
+    regions = pd.read_table(
+        checkpoints.get_stratification_files.get(genome_build=config["genome-build"]).output[0],
+        header=None,
+        names=["key", "path"],
+    ).set_index("key", drop=False)
+    regions = regions.loc[stratification_sets]
     return [x for x in range(ceil(len(regions) / beds_per_set))]

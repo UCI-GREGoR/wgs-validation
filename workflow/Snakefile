@@ -12,6 +12,7 @@ S3 = S3RemoteProvider()
 
 sys.path.insert(0, ".")
 from lib import target_construction as tc
+from lib import config_tracking_files as ctf
 
 shell.executable("/bin/bash")
 shell.prefix("set -euo pipefail; ")
@@ -50,6 +51,7 @@ validate(manifest_experiment, "../schema/experiment_manifest_schema.yaml")
 validate(manifest_reference, "../schema/reference_manifest_schema.yaml")
 validate(manifest_comparisons, "../schema/comparisons_manifest_schema.yaml")
 
+ctf.update_analysis_tracking_files(config, "results")
 
 TARGETS = (tc.construct_targets(config, manifest_experiment, manifest_comparisons),)
 
