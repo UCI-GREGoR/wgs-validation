@@ -35,9 +35,9 @@ rule happy_run:
         fa="results/{}/ref.fasta".format(reference_build),
         fai="results/{}/ref.fasta.fai".format(reference_build),
         sdf="results/{}/ref.fasta.sdf".format(reference_build),
-        stratification=lambda wildcards: checkpoints.happy_create_stratification_subset.get(
-            genome_build=reference_build, stratification_set=wildcards.stratification_set
-        ).output[0],
+        stratification="results/stratification-sets/{}/subsets_for_happy/{{stratification_set}}/stratification_subset.tsv".format(
+            reference_build
+        ),
         bed="results/confident-regions/{region}.bed",
         rtg_wrapper="workflow/scripts/rtg.bash",
     output:
