@@ -17,7 +17,7 @@ checkpoint happy_create_stratification_subset:
         ),
     threads: 1
     shell:
-        "echo \"{params.contents}\" | sed 's/\\r//g' > {output}"
+        "echo -e \"{params.contents}\" | sed 's/\\r//g' > {output}"
 
 
 rule happy_run:

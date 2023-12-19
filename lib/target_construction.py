@@ -196,7 +196,12 @@ def get_happy_stratification_by_index(wildcards, config, checkpoints):
         header=None,
         names=["key", "path"],
     ).set_index("key", drop=False)
-    lines = ["../../{}".format(x) for x in regions.loc[stratification_sets, "path"]]
+    lines = [
+        "{}\\tresults/stratification-sets/{}/{}".format(x, config["genome-build"], y)
+        for x, y in zip(
+            regions.loc[stratification_sets, "key"], regions.loc[stratification_sets, "path"]
+        )
+    ]
     lines = [
         lines[i]
         for i in range(
@@ -204,7 +209,7 @@ def get_happy_stratification_by_index(wildcards, config, checkpoints):
             min((int(wildcards.stratification_set) + 1) * beds_per_set, len(lines)),
         )
     ]
-    return lines
+    return "\\n".join(lines)
 
 
 def get_happy_stratification_set_indices(wildcards, config, checkpoints):
