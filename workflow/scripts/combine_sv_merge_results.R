@@ -49,17 +49,14 @@ library(stringr)
 #' data from svdb
 #' @param experimental.code character vector; name of experimental dataset
 #' @param reference.code character vector; name of reference dataset
-#' @param confident.region character vector; name of confident calling region background
 #' @param output.csv character vector; name of output csv file
 run.combine.svdb <- function(input.comparisons,
                              experimental.code,
                              reference.code,
-                             confident.region,
                              output.csv) {
   stopifnot(is.character(input.comparisons))
   stopifnot(is.character(experimental.code))
   stopifnot(is.character(reference.code))
-  stopifnot(is.character(confident.region))
   stopifnot(is.character(output.csv))
   stratification.set <- unname(sapply(basename(input.comparisons), function(i) {
     strsplit(i, "\\.")[[1]][1]
@@ -149,17 +146,14 @@ run.combine.svdb <- function(input.comparisons,
 #' @param input.comparisons character vector; name of input jsons from truvari
 #' @param experimental.code character vector; name of experimental dataset
 #' @param reference.code character vector; name of reference dataset
-#' @param confident.region character vector; name of confident calling region background
 #' @param output.csv character vector; name of output csv file
 run.combine.truvari <- function(input.comparisons,
                                 experimental.code,
                                 reference.code,
-                                confident.region,
                                 output.csv) {
   stopifnot(is.character(input.comparisons))
   stopifnot(is.character(experimental.code))
   stopifnot(is.character(reference.code))
-  stopifnot(is.character(confident.region))
   stopifnot(is.character(output.csv))
   stratification.set <- basename(dirname(input.comparisons))
   res <- data.frame()
@@ -234,17 +228,14 @@ run.combine.truvari <- function(input.comparisons,
 #' @param input.comparisons character vector; name of input jsons from truvari
 #' @param experimental.code character vector; name of experimental dataset
 #' @param reference.code character vector; name of reference dataset
-#' @param confident.region character vector; name of confident calling region background
 #' @param output.csv character vector; name of output csv file
 run.combine.svanalyzer <- function(input.comparisons,
                                    experimental.code,
                                    reference.code,
-                                   confident.region,
                                    output.csv) {
   stopifnot(is.character(input.comparisons))
   stopifnot(is.character(experimental.code))
   stopifnot(is.character(reference.code))
-  stopifnot(is.character(confident.region))
   stopifnot(is.character(output.csv))
   stratification.set <- unname(sapply(basename(input.comparisons), function(i) {
     strsplit(i, "\\.")[[1]][1]
@@ -311,13 +302,11 @@ run.combine.svanalyzer <- function(input.comparisons,
 #' @param input.comparisons character vector; name of input jsons from truvari
 #' @param experimental.code character vector; name of experimental dataset
 #' @param reference.code character vector; name of reference dataset
-#' @param confident.region character vector; name of confident calling region background
 #' @param output.csv character vector; name of output csv file
 run.combine <- function(toolname,
                         input.comparisons,
                         experimental.code,
                         reference.code,
-                        confident.region,
                         output.csv) {
   fxn <- NULL
   if (toolname == "svdb") {
@@ -331,7 +320,7 @@ run.combine <- function(toolname,
   }
   fxn(
     toolname, input.comparisons, experimental.code,
-    reference.code, confident.region, output.csv
+    reference.code, output.csv
   )
 }
 
@@ -341,7 +330,6 @@ if (exists("snakemake")) {
     snakemake@input[["comparisons"]],
     snakemake@params[["experimental"]],
     snakemake@params[["reference"]],
-    snakemake@params[["region"]],
     snakemake@output[["csv"]]
   )
 }

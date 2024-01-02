@@ -174,7 +174,6 @@ rule sv_combine_subsets:
     params:
         experimental="{experimental}",
         reference="{reference}",
-        region="{region}",
         toolname="{toolname}",
     conda:
         "../envs/r.yaml"
