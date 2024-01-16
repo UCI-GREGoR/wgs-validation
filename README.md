@@ -49,7 +49,6 @@ The following settings are recognized in `config/config.yaml`.
 ||`stratification-regions/region-definitions/name`: region name in hap.py extended output csv. this is a truncated part of the stratification bed filename|
 ||`stratification-regions/region-definitions/label`: pretty label describing this region type. this is intended to be the text description of the bedfile from one of the NIST READMEs|
 ||`stratification-regions/region-definitions/inclusion`: a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will feature this hap.py result set. if desired, `".*"` can be specified here to match against all reports|
-|---|---|
 
 The following columns are expected in the experiment manifest, by default at `config/manifest_experiment.tsv`:
 
@@ -58,7 +57,6 @@ The following columns are expected in the experiment manifest, by default at `co
 |`experimental_dataset`|arbitrary, unique alias for this experimental dataset|
 |`replicate`|identifier linking experimental subjects representing the same underlying sample and conditions. this identifier will be used to collapse multiple subjects into single mean/SE estimates in the downstream report, if multiple subjects with the same identifier are included in the same report|
 |`vcf`|path to experimental dataset vcf|
-|---|---|
 
 The following columns are expected in the reference manifest, by default at `config/manifest_reference.tsv`:
 
@@ -66,7 +64,6 @@ The following columns are expected in the reference manifest, by default at `con
 |---|---|
 |`reference_dataset`|arbitrary, unique alias for this reference dataset|
 |`vcf`|path to reference dataset vcf|
-|---|---|
 
 The following columns are expected in the comparisons manifest, by default at `config/manifest_comparisons.tsv`:
 
@@ -75,7 +72,6 @@ The following columns are expected in the comparisons manifest, by default at `c
 |`experimental_dataset`|experimental dataset for this comparison, referenced by unique alias|
 |`reference_dataset`|reference dataset for this comparison, referenced by unique alias|
 |`report`|unique identifier labeling which report this comparison should be included in. multiple can be specified, in a comma-delimited list|
-|---|---|
 
 Note that the entries in individual columns of the comparisons manifest are not intended to be unique, so
 multiple comparisons involving the same file are expected.
