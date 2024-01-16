@@ -39,7 +39,7 @@ The following settings are recognized in `config/config.yaml`.
 |`genome-build`|desired genome reference build for the comparisons. referenced by aliases specified in `genomes` block|
 |`genomes`|an arbitrary set of reference genome specifications. intended to be assigned tags such as `grch38`, `grch37`, etc. within each block:|
 ||`fasta`: path to genome fasta corresponding to this build. can be a path to a local file, or an http/ftp link, or an s3 path|
-||`confident-regions`|arbitrarily many bedfiles describing a confident background on which comparison should be evaluated. the names under `confident-regions` are unique identifiers labeling the region type, and contain the following key/value pairs|
+||`confident-regions`: arbitrarily many bedfiles describing a confident background on which comparison should be evaluated. the names under `confident-regions` are unique identifiers labeling the region type, and contain the following key/value pairs|
 ||`confident-regions/bed`: bed regions in which to compute calculations. high-confidence GIAB background bedfiles can be specified here|
 ||`confident-regions/inclusion`: (optional) a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will be run against these confident regions. if not included, this region is used for all reports|
 ||`stratification-regions`: intended to be the GIAB stratification regions, as described [here](https://github.com/genome-in-a-bottle/genome-stratifications). the remote directory will be mirrored locally with lftp. these entries are specified as:|
