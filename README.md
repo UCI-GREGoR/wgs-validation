@@ -25,42 +25,68 @@ Configure the workflow according to your needs via editing the files in the `con
 
 The following settings are recognized in `config/config.yaml`.
 
-- `experiment-manifest`: relative path to manifest of experimental vcfs
-- `reference-manifest`: relative path to manifest of reference (i.e. "gold standard") vcfs
-- `comparisons-manifest`: relative path to manifest of desired experimental/reference comparisons
-- `happy-bedfiles-per-stratification`: how many stratification region sets should be dispatched to a single hap.py job. hap.py is a resource hog, and a relatively small number of stratification sets to the same run can cause it to explode. a setting of no more that 6 has worked in the past, though that was in a different setting
-- `sv-settings`: configuration settings for SV comparisons and SV-specific tools
-  - `merge-experimental-before-comparison`: whether to use SVDB to combine variants within a single experimental sample vcf before comparison
-  - `merge-reference-before-comparison`: whether to use SVDB to combine variants within a single reference sample vcf before comparison
-  - `svanalyzer`: settings specific to `svanalyzer`. see [svanalyzer project](https://github.com/nhansen/SVanalyzer/blob/master/docs/svbenchmark.rst) for parameter documentation
-- `genome-build`: desired genome reference build for the comparisons. referenced by aliases specified in `genomes` block
-- `genomes`: an arbitrary set of reference genome specifications. intended to be assigned tags such as `grch38`, `grch37`, etc. within each block:
-  - `fasta`: path to genome fasta corresponding to this build. can be a path to a local file, or an http/ftp link, or an s3 path
-  - `confident-regions`: arbitrarily many bedfiles describing a confident background on which comparison should be evaluated. the names under `confident-regions` are unique identifiers labeling the region type, and contain the following key/value pairs:
-	- `bed`: bed regions in which to compute calculations. AY regions or high-confidence GIAB bedfiles can be specified here
-	- `inclusion`: (optional) a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will be run against these confident regions. if not included, this region is used for all reports
-  - `stratification-regions`: intended to be the GIAB stratification regions, as described [here](https://github.com/genome-in-a-bottle/genome-stratifications). the remote directory will be mirrored locally with lftp. these entries are specified as:
-    - `ftp`: the ftp hosting site
-	- `dir`: the subdirectory of the ftp hosting site, through the genome build directory
-	- `region-definitions`: sets of hap.py stratification regions to be included in reports
-	  - `name`: region name in hap.py extended output csv. this is a truncated part of the stratification bed filename
-	  - `label`: pretty label describing this region type. this is intended to be the text description of the bedfile from one of the NIST READMEs
-	  - `inclusion`: a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will feature this hap.py result set. if desired, `".*"` can be specified here to match against all reports
+|Configuration Setting|Description|
+|---|---|
+|`experiment-manifest`|relative path to manifest of experimental vcfs|
+|`reference-manifest`|relative path to manifest of reference (i.e. "gold standard") vcfs|
+|`comparisons-manifest`|relative path to manifest of desired experimental/reference comparisons|
+|`happy-bedfiles-per-stratification`|how many stratification region sets should be dispatched to a single hap.py job. hap.py is a resource hog, and a relatively small number of stratification sets to the same run can cause it to explode. a setting of no more that 6 has worked in the past, though that was in a different setting|
+|`sv-settings`|configuration settings for SV comparisons and SV-specific tools|
+||`merge-experimental-before-comparison`: whether to use SVDB to combine variants within a single experimental sample vcf before comparison|
+||`merge-reference-before-comparison`: whether to use SVDB to combine variants within a single reference sample vcf before comparison
+||`svanalyzer`: settings specific to `svanalyzer`. see [svanalyzer project](https://github.com/nhansen/SVanalyzer/blob/master/docs/svbenchmark.rst) for parameter documentation|
+||`svdb`: settings specific to `svdb`. see [svdb project](https://github.com/J35P312/SVDB#merge) for parameter documentation|
+|`genome-build`|desired genome reference build for the comparisons. referenced by aliases specified in `genomes` block|
+
+
+
+The `genomes` block of the configuration file contains an arbitrary set of genome specifications. The intention is that the
+blocks specified under this tag are assigned keys such as `grch38`, `grch37`, etc. The following settings are specified
+under each block:
+
+|Configuration Setting|Description|
+|---|---|
+|`fasta`|path to genome fasta corresponding to this build. can be a path to a local file, or an http/ftp link, or an s3 path|
+|`confident-regions`|arbitrarily many bedfiles describing a confident background on which comparison should be evaluated. the names under `confident-regions` are unique identifiers labeling the region type, and contain the following key/value pairs|
+||`bed`: bed regions in which to compute calculations. high-confidence GIAB background bedfiles can be specified here|
+||`inclusion`: (optional) a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will be run against these confident regions. if not included, this region is used for all reports|
+|`stratification-regions`|intended to be the GIAB stratification regions, as described [here](https://github.com/genome-in-a-bottle/genome-stratifications). the remote directory will be mirrored locally with lftp. these entries are specified as:|
+||`ftp`: the ftp hosting site|
+||`dir`: the subdirectory of the ftp hosting site, through the genome build directory|
+
+
+Within each genome specification, there can be a set of GA4GH-style stratification regions under the key `region-definitions`. If requested,
+benchmarking metrics can be computed separately for any number of these regions. For each defined regions, the following entries are required:
+
+|Configuration Setting|Description|
+|---|---|
+|`name`|region name in hap.py extended output csv. this is a truncated part of the stratification bed filename|
+|`label`|pretty label describing this region type. this is intended to be the text description of the bedfile from one of the NIST READMEs|
+|`inclusion`|a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will feature this hap.py result set. if desired, `".*"` can be specified here to match against all reports|
 
 
 The following columns are expected in the experiment manifest, by default at `config/manifest_experiment.tsv`:
-- `experimental_dataset`: arbitrary, unique alias for this experimental dataset
-- `replicate`: identifier linking experimental subjects representing the same underlying sample and conditions. this identifier will be used to collapse multiple subjects into single mean/SE estimates in the downstream report, if multiple subjects with the same identifier are included in the same report
-- `vcf`: path to experimental dataset vcf
+
+|Manifest Entry|Description|
+|---|---|
+|`experimental_dataset`|arbitrary, unique alias for this experimental dataset|
+|`replicate`|identifier linking experimental subjects representing the same underlying sample and conditions. this identifier will be used to collapse multiple subjects into single mean/SE estimates in the downstream report, if multiple subjects with the same identifier are included in the same report|
+|`vcf`|path to experimental dataset vcf|
 
 The following columns are expected in the reference manifest, by default at `config/manifest_reference.tsv`:
-- `reference_dataset`: arbitrary, unique alias for this reference dataset
-- `vcf`: path to reference dataset vcf
+
+|Manifest Entry|Description|
+|---|---|
+|`reference_dataset`|arbitrary, unique alias for this reference dataset|
+|`vcf`|path to reference dataset vcf|
 
 The following columns are expected in the comparisons manifest, by default at `config/manifest_comparisons.tsv`:
-- `experimental_dataset`: experimental dataset for this comparison, referenced by unique alias
-- `reference_dataset`: reference dataset for this comparison, referenced by unique alias
-- `report`: unique identifier labeling which report this comparison should be included in. multiple can be specified, in a comma-delimited list
+
+|Manifest Entry|Description|
+|---|---|
+|`experimental_dataset`|experimental dataset for this comparison, referenced by unique alias|
+|`reference_dataset`|reference dataset for this comparison, referenced by unique alias|
+|`report`|unique identifier labeling which report this comparison should be included in. multiple can be specified, in a comma-delimited list|
 
 Note that the entries in individual columns of the comparisons manifest are not intended to be unique, so
 multiple comparisons involving the same file are expected.

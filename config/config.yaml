@@ -10,7 +10,7 @@ experiment-manifest: "config/manifest_experiment.tsv"
 ## the GIAB links were extracted from the Octopus publication, supplemental note 1, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7611855/#SD1
 reference-manifest: "config/manifest_reference.tsv"
 comparisons-manifest: "config/manifest_comparisons.tsv"
-happy-bedfiles-per-stratification: 3
+happy-bedfiles-per-stratification: 1
 genome-build: "grch38"
 sv-toolname: "truvari"
 
@@ -21,6 +21,9 @@ sv-settings:
   svanalyzer:
     maxdist: 100000
     normshift: 0.2
+  svdb:
+    bnd-distance: 10000
+    overlap: 0.6
 
 
 ## Stratification regions are suggested for use with hap.py style analysis. All thanks to Justin Zook lol

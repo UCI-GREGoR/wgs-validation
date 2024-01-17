@@ -38,6 +38,9 @@ rule sv_svdb_within_dataset:
         temp(
             "results/{dataset_type}/{region}/{subset_group}/{subset_name}/{dataset_name}.within-svdb.vcf.gz"
         ),
+    params:
+        bnd_distance=config["sv-settings"]["svdb"]["bnd-distance"],
+        overlap=config["sv-settings"]["svdb"]["overlap"],
     conda:
         "../envs/svdb.yaml"
     threads: 1
@@ -47,7 +50,8 @@ rule sv_svdb_within_dataset:
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
         "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header > {output}.tmp.vcf && "
-        "svdb --merge --vcf {output}.tmp.vcf | sed 's/.tmp.vcf//g' | bgzip -c > {output} && "
+        "svdb --merge --vcf {output}.tmp.vcf --bnd_distance {params.bnd_distance} --overlap {params.overlap} | "
+        "sed 's/.tmp.vcf//g' | bgzip -c > {output} && "
         "rm {output}.tmp.vcf"
 
 
@@ -60,6 +64,9 @@ rule sv_svdb_across_datasets:
         reference="results/references/{region}/{setgroup}/{setname}/{reference}.within-svdb.vcf.gz",
     output:
         "results/svdb/{experimental}/{reference}/{region}/{setgroup}/{setname}.between-svdb.vcf.gz",
+    params:
+        bnd_distance=config["sv-settings"]["svdb"]["bnd-distance"],
+        overlap=config["sv-settings"]["svdb"]["overlap"],
     conda:
         "../envs/svdb.yaml"
     threads: 1
@@ -67,7 +74,7 @@ rule sv_svdb_across_datasets:
         mem_mb=8000,
         qname="small",
     shell:
-        "svdb --merge --vcf {input} | bgzip -c > {output}"
+        "svdb --merge --vcf {input} --bnd_distance {params.bnd_distance} --overlap {params.overlap} | bgzip -c > {output}"
 
 
 rule sv_summarize_variant_sources:
