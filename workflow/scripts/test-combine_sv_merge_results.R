@@ -11,8 +11,6 @@ source("combine_sv_merge_results.R")
 #'
 #' @param tmpdir character; base temporary directory
 #' to which to write test datasets.
-#' @param n.datasets integer; number of test
-#' datasets to create.
 #' @param make.empty logical; if true, purge contents
 #' of file for empty file handling testing
 #' @return list; a list of lists, where each sublist describes
