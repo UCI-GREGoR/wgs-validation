@@ -29,8 +29,8 @@ jobs:
       - run:
           name: build_and_test_r
           command: |
-            mamba install -c conda-forge -y curl gnupg r-covr r-testthat r-ggplot2 r-stringr r-jsonlite
-            Rscript ./run_tests.R
+            mamba install -c conda-forge -y curl gnupg r-covr r-testthat r-ggplot2 r-stringr r-jsonlite sed
+            Rscript ./run_tests.R | sed 's|name":"|name":"workflow/scripts/|g'
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
             ./codecov -R . -c -F r
