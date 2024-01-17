@@ -19,14 +19,20 @@ jobs:
             - "82:36:a6:28:7b:85:be:1e:52:91:f1:6f:3a:4b:b5:d6"
       - checkout
       - run:
-          name: build_and_test
+          name: build_and_test_python
           command: |
-            mamba install -c bioconda -c conda-forge -y curl gnupg r-covr r-testthat pytest-cov pytest-lazy-fixture pandas snakemake r-ggplot2 r-stringr r-jsonlite
+            mamba install -c bioconda -c conda-forge -y curl gnupg pytest-cov pytest-lazy-fixture pandas snakemake
             pytest --cov=workflow/scripts --cov=lib workflow/scripts lib
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
             ./codecov -R . -c -F python
+      - run:
+          name: build_and_test_r
+          command: |
+            mamba install -c conda-forge -y curl gnupg r-covr r-testthat r-ggplot2 r-stringr r-jsonlite
             Rscript ./run_tests.R
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
             ./codecov -R . -c -F r
 
 
