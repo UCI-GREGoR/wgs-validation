@@ -1,5 +1,9 @@
 # Snakemake workflow: WGS Validation
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/UCI-GREGoR/wgs-validation/tree/default.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/UCI-GREGoR/wgs-validation/tree/default)
+
+[![codecov](https://codecov.io/gh/UCI-GREGoR/wgs-validation/graph/badge.svg?token=SLLOZX9Y3B)](https://codecov.io/gh/UCI-GREGoR/wgs-validation)
+
 This workflow is intended to be a formal replacement for the _ad hoc_ validation system in place for the original research WGS pipeline circa 2020. The initial effort is designed to replicate as much of the feature set of the original validation schema as possible, but with testing and reproducibility. After that is accomplished, the feature set will be expanded to encompass the extra validation required for research whole genome data.
 
 New global targets should be added in `workflow/Snakefile`. Content in `workflow/Snakefile` and the snakefiles in `workflow/rules` should be specifically _rules_; python infrastructure should be composed as subroutines under `lib/` and constructed in such a manner as to be testable with [pytest](https://docs.pytest.org/en/7.2.x/). Rules can call embedded scripts (in python or R/Rmd) from `workflow/scripts`; again, these should be constructed to be testable with pytest or [testthat](https://testthat.r-lib.org/).
