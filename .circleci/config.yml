@@ -21,7 +21,7 @@ jobs:
       - run:
           name: build_and_test
           command: |
-            mamba install -c conda-forge -y curl gnupg r-covr r-testthat pytest-cov pytest-lazy-fixture
+            mamba install -c bioconda -c conda-forge -y curl gnupg r-covr r-testthat pytest-cov pytest-lazy-fixture pandas snakemake r-ggplot2 r-stringr r-jsonlite
             pytest --cov=workflow/scripts --cov=lib workflow/scripts lib
             Rscript ./run_tests.R
             curl -Os https://uploader.codecov.io/latest/linux/codecov
