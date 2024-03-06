@@ -234,3 +234,27 @@ def get_happy_stratification_set_indices(wildcards, config, checkpoints):
     ).set_index("key", drop=False)
     regions = regions.loc[stratification_sets]
     return [x for x in range(ceil(len(regions) / beds_per_set))]
+
+
+def flatten_region_definitions(config: dict, reference_build: str) -> list:
+    """
+    Snakemake flattens certain types of configuration dict structures into
+    simple string lists when passing the structures into scripts. This flattening
+    is awkward but functional. However, in order to use the flattened list,
+    which evidently strips the keys from the dict, one must assume the fixed
+    order of the values in the config. The yaml package seems to preserve
+    the order of the keys as observed in the config file, which creates the
+    possibility that a user might provide a shuffled but valid specification
+    of a region and then break the logic that assumes the key order incorrectly.
+
+    As such, we need to flatten it manually, enforcing order.
+    """
+    region_definitions = config["genomes"][reference_build]["stratification-regions"][
+        "region-definitions"
+    ]
+    res = []
+    for region_definition in region_definitions:
+        res.extend(
+            [region_definition["name"], region_definition["label"], region_definition["inclusion"]]
+        )
+    return res

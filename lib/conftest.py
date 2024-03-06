@@ -20,7 +20,7 @@ def config():
                     "all-stratifications": "vWhatever.all-stratifications.tsv",
                     "region-definitions": [
                         {"name": "*", "label": "everybody", "inclusion": ".*"},
-                        {"name": "name1", "label": "some1", "inclusion": ".*"},
+                        {"name": "name1", "inclusion": ".*", "label": "some1"},
                         {"name": "name2", "label": "some2", "inclusion": ".*"},
                     ],
                 },
