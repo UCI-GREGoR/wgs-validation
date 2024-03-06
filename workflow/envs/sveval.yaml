@@ -1,0 +1,6 @@
+channels:
+  - https://raw.githubusercontent.com/lightning-auriga/conda-builds/default/conda-builds
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-sveval
