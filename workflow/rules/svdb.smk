@@ -14,8 +14,11 @@ rule sv_svdb_within_dataset:
         ),
         region_bed="results/confident-regions/{region}.bed",
     output:
-        temp(
+        vcf=temp(
             "results/{dataset_type}/{region}/{subset_group}/{subset_name}/{dataset_name}.within-svdb.vcf.gz"
+        ),
+        tmpvcf=temp(
+            "results/{dataset_type}/{region}/{subset_group}/{subset_name}/{dataset_name}.within-svdb.vcf.gz.tmp.vcf"
         ),
     params:
         bnd_distance=config["sv-settings"]["svdb"]["bnd-distance"],
@@ -28,10 +31,9 @@ rule sv_svdb_within_dataset:
         qname="small",
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
-        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header > {output}.tmp.vcf && "
-        "svdb --merge --vcf {output}.tmp.vcf --bnd_distance {params.bnd_distance} --overlap {params.overlap} | "
-        "sed 's/.tmp.vcf//g' | bgzip -c > {output} && "
-        "rm {output}.tmp.vcf"
+        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header > {output.tmpvcf} && "
+        "svdb --merge --vcf {output.tmpvcf} --bnd_distance {params.bnd_distance} --overlap {params.overlap} | "
+        "sed 's/.tmp.vcf//g' | bgzip -c > {output.vcf}"
 
 
 rule sv_svdb_across_datasets:
