@@ -7,10 +7,12 @@ import pandas as pd
 from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
 from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 from snakemake.utils import validate
+import yaml
 
 S3 = S3RemoteProvider()
 
 sys.path.insert(0, ".")
+from lib import resource_calculator as rc
 from lib import target_construction as tc
 from lib import config_tracking_files as ctf
 
@@ -22,6 +24,11 @@ configfile: "config/config.yaml"
 
 
 validate(config, "../schema/global_config_schema.yaml")
+
+with open("config/config_resources.yaml", "r") as f:
+    config_resources = yaml.safe_load(f)
+
+validate(config_resources, "../schema/resources_config_schema.yaml")
 
 tempDir = "temp"
 manifest_experiment = config["experiment-manifest"]

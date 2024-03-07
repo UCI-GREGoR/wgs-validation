@@ -11,10 +11,11 @@ rule vcfeval_run:
         vcf="results/vcfeval/{experimental}/{reference}/results.vcf.gz",
     conda:
         "../envs/vcfeval.yaml"
-    threads: 1
+    threads: config_resources["rtg-vcfeval"]["threads"]
     resources:
-        qname="small",
-        mem_mb=8000,
+        slurm_partition=rc.select_partition(
+            config_resources["rtg-vcfeval"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "rtg vcfeval --baseline={input.reference} --calls={input.experimental} --template={input.sdf} "
         "--output-mode=annotate --output={output} --Xtwo-pass=False --ref-overlap"

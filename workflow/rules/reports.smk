@@ -26,9 +26,11 @@ rule control_validation_report:
         "results/performance_benchmarks/reports/report_{comparison}_vs_region-{region}.tsv"
     conda:
         "../envs/r.yaml"
-    threads: 1
+    threads: config_resources["r"]["threads"]
     resources:
-        qname="small",
-        mem_mb=4000,
+        slurm_partition=rc.select_partition(
+            config_resources["r"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["r"]["memory"],
     script:
         "../scripts/control_validation.Rmd"

@@ -25,10 +25,12 @@ rule sv_svdb_within_dataset:
         overlap=config["sv-settings"]["svdb"]["overlap"],
     conda:
         "../envs/svdb.yaml"
-    threads: 1
+    threads: config_resources["svdb"]["threads"]
     resources:
-        mem_mb=8000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["svdb"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["svdb"]["memory"],
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
         "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header > {output.tmpvcf} && "
@@ -50,10 +52,12 @@ rule sv_svdb_across_datasets:
         overlap=config["sv-settings"]["svdb"]["overlap"],
     conda:
         "../envs/svdb.yaml"
-    threads: 1
+    threads: config_resources["svdb"]["threads"]
     resources:
-        mem_mb=8000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["svdb"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["svdb"]["memory"],
     shell:
         "svdb --merge --vcf {input} --bnd_distance {params.bnd_distance} --overlap {params.overlap} | bgzip -c > {output}"
 
@@ -73,10 +77,12 @@ rule sv_summarize_variant_sources:
         ),
     conda:
         "../envs/bcftools.yaml"
-    threads: 1
+    threads: config_resources["bcftools"]["threads"]
     resources:
-        mem_mb=2000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["bcftools"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["bcftools"]["memory"],
     shell:
         "bcftools query -f '%CHROM\\t%POS\\t%ID\\t%REF\\t%ALT\\t%QUAL\\t%FILTER\\t%INFO/SVTYPE\\t%INFO\\n' {input} > {output}"
 
@@ -102,9 +108,11 @@ rule sv_combine_subsets:
         toolname="{toolname}",
     conda:
         "../envs/r.yaml"
-    threads: 1
+    threads: config_resources["r"]["threads"]
     resources:
-        mem_mb=1000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["r"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["r"]["memory"],
     script:
         "../scripts/combine_sv_merge_results.R"

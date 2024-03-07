@@ -9,10 +9,12 @@ rule tabix_index:
         "results/{dataset,references|experimentals}/{prefix}.vcf.gz.tbi",
     conda:
         "../envs/bcftools.yaml"
-    threads: 1
+    threads: config_resources["bcftools"]["threads"]
     resources:
-        mem_mb=2000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["bcftools"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["bcftools"]["memory"],
     shell:
         "tabix -p vcf {input}"
 
@@ -37,10 +39,12 @@ rule sv_within_dataset:
         ),
     conda:
         "../envs/svdb.yaml"
-    threads: 1
+    threads: config_resources["svdb"]["threads"]
     resources:
-        mem_mb=8000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["svdb"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["svdb"]["memory"],
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
         "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header | bgzip -c > {output}"
@@ -119,10 +123,12 @@ rule truvari_bench:
         min_sequence_overlap="0",
     conda:
         "../envs/truvari.yaml"
-    threads: 1
+    threads: config_resources["truvari"]["threads"]
     resources:
-        mem_mb=8000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["truvari"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["truvari"]["memory"],
     shell:
         "rm -Rf {params.outdir} && "
         "truvari bench -b {input.reference} -c {input.experimental} -f {input.fasta} -o {params.outdir} "
@@ -163,10 +169,12 @@ rule truvari_refine:
         outdir="results/truvari/{experimental}/{reference}/{region}/{subset_group}/{subset_name}",
     conda:
         "../envs/truvari.yaml"
-    threads: 1
+    threads: config_resources["truvari"]["threads"]
     resources:
-        mem_mb=24000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["truvari"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["truvari"]["memory"],
     shell:
         "rm -Rf {params.outdir}/phab && "
         "truvari refine {params.outdir}"
