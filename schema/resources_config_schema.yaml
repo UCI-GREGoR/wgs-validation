@@ -1,0 +1,51 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: tool/rule-specific resource configuration
+properties:
+  partitions:
+    patternProperties:
+      "^.*$":
+        type: array
+        items:
+          type: string
+  tmpdir:
+    type: string
+  default: &defaults
+    type: object
+    properties:
+      threads:
+        type: integer
+        min: 1
+      memory:
+        type: integer
+        min: 100
+      partition:
+        type: string
+    required:
+      - threads
+      - memory
+      - partition
+    additionalProperties: false
+  bcftools:
+    <<: *defaults
+  happy:
+    <<: *defaults
+  r:
+    <<: *defaults
+  rtg-vcfeval:
+    <<: *defaults
+  svanalyzer:
+    <<: *defaults
+  svdb:
+    <<: *defaults
+  truvari:
+    <<: *defaults
+required:
+  - partitions
+  - bcftools
+  - happy
+  - r
+  - rtg-vcfeval
+  - svanalyzer
+  - svdb
+  - truvari
+additionalProperties: false

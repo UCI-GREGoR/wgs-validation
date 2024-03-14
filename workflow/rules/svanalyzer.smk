@@ -49,10 +49,11 @@ rule svanalyzer_run:
         minsize="0",
     conda:
         "../envs/svanalyzer.yaml"
-    threads: 1
+    threads: config_resources["svanalyzer"]["threads"]
     resources:
-        mem_mb=8000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["svanalyzer"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "svanalyzer benchmark --ref {input.fasta} --test {input.experimental} --truth {input.reference} "
         "--prefix {params.outdir} --maxdist {params.maxdist} --normshift {params.normshift} "

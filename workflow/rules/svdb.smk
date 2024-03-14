@@ -1,58 +1,41 @@
-def get_bedfile_from_name(wildcards, checkpoints, prefix):
-    """
-    pull data from checkpoint output
-    """
-    res = []
-    with open(
-        checkpoints.happy_create_stratification_subset.get(
-            genome_build=reference_build, stratification_set=wildcards.subset_group
-        ).output[0],
-        "r",
-    ) as f:
-        if wildcards.subset_name == "all_background":
-            return "results/confident-regions/{}.bed".format(wildcards.region)
-        for line in f.readlines():
-            line_data = line.split("\t")
-            if line_data[0].strip().rstrip() == wildcards.subset_name:
-                return "{}/{}".format(prefix, line_data[1].strip().rstrip())
-    raise ValueError(
-        'cannot find stratification region with name "{}"'.format(wildcards.subset_name)
-    )
-
-
 rule sv_svdb_within_dataset:
     """
     Run svdb merging markers in a single dataset
     """
     input:
         vcf="results/{dataset_type}/{dataset_name}.vcf.gz",
-        stratification_bed=lambda wildcards: get_bedfile_from_name(
+        stratification_bed=lambda wildcards: tc.get_bedfile_from_name(
             wildcards,
             checkpoints,
             "results/stratification-sets/{}/subsets_for_happy/{{subset_group}}".format(
                 reference_build
             ),
+            reference_build,
         ),
         region_bed="results/confident-regions/{region}.bed",
     output:
-        temp(
+        vcf=temp(
             "results/{dataset_type}/{region}/{subset_group}/{subset_name}/{dataset_name}.within-svdb.vcf.gz"
+        ),
+        tmpvcf=temp(
+            "results/{dataset_type}/{region}/{subset_group}/{subset_name}/{dataset_name}.within-svdb.vcf.gz.tmp.vcf"
         ),
     params:
         bnd_distance=config["sv-settings"]["svdb"]["bnd-distance"],
         overlap=config["sv-settings"]["svdb"]["overlap"],
     conda:
         "../envs/svdb.yaml"
-    threads: 1
+    threads: config_resources["svdb"]["threads"]
     resources:
-        mem_mb=8000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["svdb"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["svdb"]["memory"],
     shell:
         "bedtools intersect -a {input.stratification_bed} -b {input.region_bed} | "
-        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header > {output}.tmp.vcf && "
-        "svdb --merge --vcf {output}.tmp.vcf --bnd_distance {params.bnd_distance} --overlap {params.overlap} | "
-        "sed 's/.tmp.vcf//g' | bgzip -c > {output} && "
-        "rm {output}.tmp.vcf"
+        "bedtools intersect -a {input.vcf} -b stdin -wa -f 1 -header > {output.tmpvcf} && "
+        "svdb --merge --vcf {output.tmpvcf} --bnd_distance {params.bnd_distance} --overlap {params.overlap} | "
+        "sed 's/.tmp.vcf//g' | bgzip -c > {output.vcf}"
 
 
 rule sv_svdb_across_datasets:
@@ -69,10 +52,12 @@ rule sv_svdb_across_datasets:
         overlap=config["sv-settings"]["svdb"]["overlap"],
     conda:
         "../envs/svdb.yaml"
-    threads: 1
+    threads: config_resources["svdb"]["threads"]
     resources:
-        mem_mb=8000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["svdb"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["svdb"]["memory"],
     shell:
         "svdb --merge --vcf {input} --bnd_distance {params.bnd_distance} --overlap {params.overlap} | bgzip -c > {output}"
 
@@ -92,76 +77,14 @@ rule sv_summarize_variant_sources:
         ),
     conda:
         "../envs/bcftools.yaml"
-    threads: 1
+    threads: config_resources["bcftools"]["threads"]
     resources:
-        mem_mb=2000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["bcftools"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["bcftools"]["memory"],
     shell:
         "bcftools query -f '%CHROM\\t%POS\\t%ID\\t%REF\\t%ALT\\t%QUAL\\t%FILTER\\t%INFO/SVTYPE\\t%INFO\\n' {input} > {output}"
-
-
-def find_datasets_in_subset(wildcards, checkpoints, prefix):
-    """
-    pull data from checkpoint output
-    """
-    res = []
-    if wildcards.toolname == "svdb":
-        res.append(
-            "results/svdb/{}/{}/{}/{}/all_background.between-svdb.vcf.gz.pwv_comparison".format(
-                wildcards.experimental,
-                wildcards.reference,
-                wildcards.region,
-                wildcards.stratification_set,
-            )
-        )
-    elif wildcards.toolname == "truvari":
-        res.append(
-            "results/truvari/{}/{}/{}/{}/all_background/summary.json".format(
-                wildcards.experimental,
-                wildcards.reference,
-                wildcards.region,
-                wildcards.stratification_set,
-            )
-        )
-    with open(
-        checkpoints.happy_create_stratification_subset.get(
-            genome_build=reference_build, stratification_set=wildcards.stratification_set
-        ).output[0],
-        "r",
-    ) as f:
-        for line in f.readlines():
-            if len(line.rstrip()) > 0:
-                if wildcards.toolname == "svdb":
-                    res.append(
-                        "results/svdb/{}/{}/{}/{}/{}.between-svdb.vcf.gz.pwv_comparison".format(
-                            wildcards.experimental,
-                            wildcards.reference,
-                            wildcards.region,
-                            wildcards.stratification_set,
-                            line.split("\t")[0].strip().rstrip(),
-                        )
-                    )
-                elif wildcards.toolname == "truvari":
-                    res.append(
-                        "results/truvari/{}/{}/{}/{}/{}/summary.json".format(
-                            wildcards.experimental,
-                            wildcards.reference,
-                            wildcards.region,
-                            wildcards.stratification_set,
-                            line.split("\t")[0].strip().rstrip(),
-                        )
-                    )
-                elif wildcards.toolname == "svanalyzer":
-                    res.append(
-                        "results/svanalyzer/{}/{}/{}/{}/{}.report".format(
-                            wildcards.experimental,
-                            wildcards.reference,
-                            wildcards.region,
-                            wildcards.stratification_set,
-                            line.split("\t")[0].strip().rstrip(),
-                        )
-                    )
-    return res
 
 
 rule sv_combine_subsets:
@@ -169,12 +92,13 @@ rule sv_combine_subsets:
     Determine which sv comparisons need to be aggregated in an emulation of hap.py's output structure
     """
     input:
-        comparisons=lambda wildcards: find_datasets_in_subset(
+        comparisons=lambda wildcards: tc.find_datasets_in_subset(
             wildcards,
             checkpoints,
             "results/stratification-sets/{}/subsets_for_happy/{{stratification_set}}".format(
                 reference_build
             ),
+            reference_build,
         ),
     output:
         csv="results/{toolname,svdb|truvari|svanalyzer}/{experimental}/{reference}/{region}/{stratification_set}/results.extended.csv",
@@ -184,9 +108,11 @@ rule sv_combine_subsets:
         toolname="{toolname}",
     conda:
         "../envs/r.yaml"
-    threads: 1
+    threads: config_resources["r"]["threads"]
     resources:
-        mem_mb=1000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["r"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["r"]["memory"],
     script:
         "../scripts/combine_sv_merge_results.R"

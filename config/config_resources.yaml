@@ -1,0 +1,47 @@
+partitions:
+  small:
+    - "small"
+  large:
+    - "large"
+
+tmpdir: "temp"
+
+default:
+  threads: 1
+  memory: 2000
+  partition: "small"
+
+bcftools:
+  threads: 1
+  memory: 2000
+  partition: "small"
+
+happy:
+  threads: 4
+  memory: 64000
+  partition: "small"
+
+r:
+  threads: 1
+  memory: 4000
+  partition: "small"
+
+rtg-vcfeval:
+  threads: 1
+  memory: 16000
+  partition: "small"
+
+svanalyzer:
+  threads: 1
+  memory: 8000
+  partition: "small"
+
+svdb:
+  threads: 1
+  memory: 8000
+  partition: "small"
+
+truvari:
+  threads: 1
+  memory: 24000
+  partition: "small"

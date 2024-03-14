@@ -1,4 +1,6 @@
 localrules:
+    add_region_name,
+    combine_results,
     happy_create_stratification_subset,
 
 
@@ -15,7 +17,7 @@ checkpoint happy_create_stratification_subset:
         contents=lambda wildcards: tc.get_happy_stratification_by_index(
             wildcards, config, checkpoints
         ),
-    threads: 1
+    threads: config_resources["default"]["threads"]
     shell:
         "echo -e \"{params.contents}\" | sed 's/\\r//g' > {output}"
 
@@ -64,10 +66,12 @@ rule happy_run:
         "results/performance_benchmarks/happy_run/{experimental}/{reference}/{region}/{stratification_set}/results.tsv"
     conda:
         "../envs/happy.yaml"
-    threads: 4
+    threads: config_resources["happy"]["threads"]
     resources:
-        qname="small",
-        mem_mb=64000,
+        slurm_partition=rc.select_partition(
+            config_resources["happy"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["happy"]["memory"],
         tmpdir=lambda wildcards: "temp/happy/{}/{}/{}/{}".format(
             wildcards.experimental,
             wildcards.reference,
@@ -80,11 +84,6 @@ rule happy_run:
         "--stratification {input.stratification} "
         "-V --engine=vcfeval --engine-vcfeval-path={input.rtg_wrapper} --engine-vcfeval-template={input.sdf} "
         "--threads {threads} --scratch-prefix {params.tmpdir}"
-
-
-localrules:
-    add_region_name,
-    combine_results,
 
 
 rule add_region_name:

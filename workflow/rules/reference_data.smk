@@ -45,10 +45,12 @@ checkpoint get_stratification_files:
     conda:
         "../envs/lftp.yaml"
     priority: 1
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        qname="small",
-        mem_mb=2000,
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["default"]["memory"],
     shell:
         "mkdir -p {params.outdir} && "
         "lftp -c 'set ftp:list-options -a; "
@@ -73,10 +75,12 @@ rule acquire_confident_regions:
         source=lambda wildcards: config["genomes"][reference_build]["confident-regions"][
             wildcards.region
         ]["bed"],
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        qname="small",
-        mem_mb=2000,
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["default"]["memory"],
     shell:
         "if [[ {params.source} = s3://* ]] ; then "
         "aws s3 cp {input} {output.tmp} ; "
@@ -106,10 +110,12 @@ rule create_fai:
         "results/performance_benchmarks/create_fai/{prefix}.fasta.fai.tsv"
     conda:
         "../envs/samtools.yaml"
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        mem_mb=4000,
-        qname="small",
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["default"]["memory"],
     shell:
         "samtools faidx {input}"
 
@@ -126,9 +132,10 @@ rule create_sdf:
         "results/performance_benchmarks/create_sdf/{genome}.tsv"
     conda:
         "../envs/vcfeval.yaml"
-    threads: 1
+    threads: config_resources["rtg-vcfeval"]["threads"]
     resources:
-        qname="small",
-        mem_mb=16000,
+        slurm_partition=rc.select_partition(
+            config_resources["rtg-vcfeval"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "rtg RTG_MEM=12G format -f fasta -o {output} {input}"

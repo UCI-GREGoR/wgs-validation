@@ -40,6 +40,7 @@ The following settings are recognized in `config/config.yaml`.
 ||`merge-reference-before-comparison`: whether to use SVDB to combine variants within a single reference sample vcf before comparison
 ||`svanalyzer`: settings specific to `svanalyzer`. see [svanalyzer project](https://github.com/nhansen/SVanalyzer/blob/master/docs/svbenchmark.rst) for parameter documentation|
 ||`svdb`: settings specific to `svdb`. see [svdb project](https://github.com/J35P312/SVDB#merge) for parameter documentation|
+||`sveval`: settings specific to `sveval`. see [sveval project](https://github.com/jmonlong/sveval) for parameter documentation|
 |`genome-build`|desired genome reference build for the comparisons. referenced by aliases specified in `genomes` block|
 
 

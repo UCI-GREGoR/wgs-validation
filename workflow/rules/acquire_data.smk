@@ -11,10 +11,12 @@ rule download_reference_data:
         lambda wildcards: tc.map_reference_file(wildcards, manifest_reference),
     conda:
         "../envs/awscli.yaml"
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        qname="small",
-        mem_mb=1000,
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["default"]["memory"],
     shell:
         "if [[ {params} = s3://* ]] ; then "
         "aws s3 cp {input} {output} ; "

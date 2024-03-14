@@ -51,6 +51,56 @@ properties:
           - bnd-distance
           - overlap
         additionalProperties: false
+      sveval:
+        type: object
+        properties:
+          max-ins-dist:
+            type: integer
+            min: 0
+            default: 20
+          min-cov:
+            type: number
+            min: 0
+            max: 1
+            default: 0.5
+          min-del-rol:
+            type: number
+            min: 0
+            max: 1
+            default: 0.1
+          min-size:
+            type: integer
+            min: 0
+            default: 0
+          ins-seq-comp:
+            type: boolean
+            default: false
+          check-inv:
+            type: boolean
+            default: false
+          geno-eval:
+            type: boolean
+            default: false
+          method:
+            type: string
+            pattern: "^bipartite$"
+            default: "bipartite"
+          stitch-hets:
+            type: boolean
+            default: true
+          stitch-dist:
+            type: integer
+            min: 0
+            default: 20
+          merge-hets:
+            type: boolean
+            default: true
+          merge-rol:
+            type: number
+            min: 0
+            max: 1
+            default: 0.8
+        additionalProperties: no
     required:
       - merge-experimental-before-comparison
       - merge-reference-before-comparison
