@@ -1,2 +1,2 @@
 reference_dataset	vcf
-GIAB_HG001_NA12878_GRCh38_NIST	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/NA12878_HG001/latest/GRCh38/HG001_GRCh38_1_22_v4.2.1_benchmark.vcf.gz
+GIAB_HG001_NA12878_GRCh38_NIST	https://github.com/lightning-auriga/genomic-test-data/raw/default/HG001.chr22.vcf.gz

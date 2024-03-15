@@ -1,2 +1,2 @@
 experimental_dataset	replicate	vcf
-NA12878_NIST	NA12878	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/NA12878_HG001/latest/GRCh38/HG001_GRCh38_1_22_v4.2.1_benchmark.vcf.gz
+NA12878_NIST	NA12878	https://github.com/lightning-auriga/genomic-test-data/raw/default/HG001.chr22.vcf.gz
