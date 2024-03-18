@@ -55,7 +55,7 @@ under each block:
 |`confident-regions`|arbitrarily many bedfiles describing a confident background on which comparison should be evaluated. the names under `confident-regions` are unique identifiers labeling the region type, and contain the following key/value pairs|
 ||`bed`: bed regions in which to compute calculations. high-confidence GIAB background bedfiles can be specified here|
 ||`inclusion`: (optional) a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will be run against these confident regions. if not included, this region is used for all reports|
-|`stratification-regions`|intended to be the GIAB stratification regions, as described [here](https://github.com/genome-in-a-bottle/genome-stratifications). the remote directory will be mirrored locally with lftp. these entries are specified as:|
+|`stratification-regions`|intended to be the GIAB stratification regions, as described [here](https://github.com/genome-in-a-bottle/genome-stratifications). the remote directory will be mirrored locally. these entries are specified as:|
 ||`ftp`: the ftp hosting site|
 ||`dir`: the subdirectory of the ftp hosting site, through the genome build directory|
 

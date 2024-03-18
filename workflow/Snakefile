@@ -10,6 +10,7 @@ from snakemake.utils import validate
 import yaml
 
 S3 = S3RemoteProvider()
+HTTP = HTTPRemoteProvider()
 
 sys.path.insert(0, ".")
 from lib import resource_calculator as rc
