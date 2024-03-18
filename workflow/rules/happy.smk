@@ -10,7 +10,8 @@ checkpoint happy_create_stratification_subset:
     to address the fact that hap.py is a giant resource hog.
     """
     input:
-        "results/stratification-sets/{genome_build}/stratification_regions.tsv",
+        "results/stratification-sets/{genome_build}.stratification_regions.tsv",
+        lambda wildcards: tc.get_required_stratifications(wildcards, config, checkpoints),
     output:
         "results/stratification-sets/{genome_build}/subsets_for_happy/{stratification_set}/stratification_subset.tsv",
     params:
@@ -39,6 +40,9 @@ rule happy_run:
         sdf="results/{}/ref.fasta.sdf".format(reference_build),
         stratification="results/stratification-sets/{}/subsets_for_happy/{{stratification_set}}/stratification_subset.tsv".format(
             reference_build
+        ),
+        stratification_files=lambda wildcards: tc.get_required_stratifications(
+            wildcards, config, checkpoints
         ),
         bed="results/confident-regions/{region}.bed",
         rtg_wrapper="workflow/scripts/rtg.bash",

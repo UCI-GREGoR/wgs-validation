@@ -1,23 +1,8 @@
-checkpoint get_stratification_files:
-    """
-    Get directory of NIST/Zook stratification regions.
-
-    The idea here is: there is a set type of ftp directory that contains a top level set
-    of annotations and a bunch of subdirectories with compressed bedfiles containing stratification regions.
-    The bedfiles need to be downloaded, and then the top-level file linking between a pretty(ish) name and
-    the relative path to the bedfile needs to be placed in a place that Snakemake can see it.
-
-    To reduce the burden of ftp pulls, and to deal with uncertain logic concerning which files
-    need to be present when in the DAG, this command is split into two parts in the same checkpoint.
-    In the first, the linker is pulled by itself. The linker is then parsed on the fly to create
-    a subset of files to pull in the second lftp command. This should substantially reduce
-    the number of transferred files in most cases.
-    """
+checkpoint get_stratification_linker:
     input:
         trackers=lambda wildcards: ctf.get_ftp_tracking_files(config, "results"),
     output:
-        tsv="results/stratification-sets/{genome_build}/stratification_regions.tsv",
-        query=temp("results/stratification-sets/{genome_build}/stratification_regions_query.tsv"),
+        tsv="results/stratification-sets/{genome_build}.stratification_regions.tsv",
     params:
         outdir="results/stratification-sets/{genome_build}",
         ftpsite=lambda wildcards: config["genomes"][wildcards.genome_build][
@@ -29,21 +14,8 @@ checkpoint get_stratification_files:
         linker_fn=lambda wildcards: config["genomes"][wildcards.genome_build][
             "stratification-regions"
         ]["all-stratifications"],
-        config_query=lambda wildcards: "|".join(
-            [
-                "^{}".format(x["name"])
-                for x in filter(
-                    lambda y: y["name"] != "*",
-                    config["genomes"][wildcards.genome_build]["stratification-regions"][
-                "region-definitions"
-                    ],
-                )
-            ]
-        ),
     benchmark:
-        "results/performance_benchmarks/get_stratification_files/{genome_build}/results.tsv"
-    conda:
-        "../envs/lftp.yaml"
+        "results/performance_benchmarks/get_stratification_linker/{genome_build}/results.tsv"
     priority: 1
     threads: config_resources["default"]["threads"]
     resources:
@@ -53,15 +25,21 @@ checkpoint get_stratification_files:
         mem_mb=config_resources["default"]["memory"],
     shell:
         "mkdir -p {params.outdir} && "
-        "lftp -c 'set ftp:list-options -a; "
-        'open "anonymous:@{params.ftpsite}"; '
-        "mirror --verbose -p --include {params.linker_fn} {params.ftpdir} {params.outdir}' && "
-        "mv {params.outdir}/{params.linker_fn} {output.tsv} && "
-        "grep -E \"{params.config_query}\" {output.tsv} | cut -f2 | sed 's/\\r//g' > {output.query} && "
-        "lftp -c 'set ftp:list-options -a; "
-        'open "anonymous:@{params.ftpsite}"; '
-        "mirror --verbose -p --include-rx-from={output.query} {params.ftpdir} {params.outdir}' && "
-        "find {params.outdir} -type d -empty -delete"
+        "wget -O {output.tsv} {params.ftpsite}/{params.ftpdir}/{params.linker_fn}"
+
+
+rule get_stratification_file:
+    input:
+        lambda wildcards: HTTP.remote(
+            "{}/{}/{{subdir}}/{{prefix}}.bed{{suffix}}".format(
+                config["genomes"][wildcards.genome_build]["stratification-regions"]["ftp"],
+                config["genomes"][wildcards.genome_build]["stratification-regions"]["dir"],
+            )
+        ),
+    output:
+        "results/stratification-sets/{genome_build}/{subdir}/{prefix}.bed{suffix}",
+    shell:
+        "cp {input} {output}"
 
 
 rule acquire_confident_regions:

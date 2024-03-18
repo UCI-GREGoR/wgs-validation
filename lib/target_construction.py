@@ -3,7 +3,8 @@ import re
 from math import ceil
 
 import pandas as pd
-from snakemake.io import AnnotatedString, Namedlist, expand
+from snakemake.checkpoints import Checkpoints
+from snakemake.io import AnnotatedString, Namedlist, Wildcards, expand
 from snakemake.remote.FTP import RemoteProvider as FTPRemoteProvider
 from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
@@ -192,7 +193,7 @@ def get_happy_stratification_by_index(wildcards, config, checkpoints):
         )
     ]
     regions = pd.read_table(
-        checkpoints.get_stratification_files.get(genome_build=config["genome-build"]).output[0],
+        checkpoints.get_stratification_linker.get(genome_build=config["genome-build"]).output[0],
         header=None,
         names=["key", "path"],
     ).set_index("key", drop=False)
@@ -228,7 +229,7 @@ def get_happy_stratification_set_indices(wildcards, config, checkpoints):
         )
     ]
     regions = pd.read_table(
-        checkpoints.get_stratification_files.get(genome_build=config["genome-build"]).output[0],
+        checkpoints.get_stratification_linker.get(genome_build=config["genome-build"]).output[0],
         header=None,
         names=["key", "path"],
     ).set_index("key", drop=False)
@@ -343,3 +344,20 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix, reference_build: str
                         )
                     )
     return res
+
+
+def get_required_stratifications(wildcards: Wildcards, config: dict, checkpoints: Checkpoints):
+    stratification_regions = config["genomes"][config["genome-build"]]["stratification-regions"]
+    target_regions = [region["name"] for region in stratification_regions["region-definitions"]]
+    target_files = []
+    with checkpoints.get_stratification_linker.get(genome_build=config["genome-build"]).output[
+        0
+    ].open() as f:
+        for line in f.readlines():
+            if line.split("\t")[0] in target_regions:
+                target_files.append(
+                    "results/stratification-sets/{}/{}".format(
+                        config["genome-build"], line.split("\t")[1].rstrip()
+                    )
+                )
+    return target_files
