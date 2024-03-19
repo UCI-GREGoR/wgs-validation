@@ -105,11 +105,11 @@ def test_map_experimental_file(wildcards_comparison, manifest_experiment):
     assert observed == expected
 
 
-def test_flatten_region_definitions(config):
+def test_flatten_region_definitions(config, label_df):
     """
     Test that flatten_region_definitions can convert a list of dicts
     to a flattened string list with preserved value ordering.
     """
     expected = ["*", "everybody", ".*", "name1", "some1", ".*", "name2", "some2", ".*"]
-    observed = tc.flatten_region_definitions(config, "grch100")
+    observed = tc.flatten_region_definitions(config, label_df, "grch100")
     assert observed == expected

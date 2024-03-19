@@ -188,7 +188,7 @@ def get_happy_stratification_by_index(wildcards, config, checkpoints):
         for x in filter(
             lambda z: z["name"] != "*",
             config["genomes"][config["genome-build"]]["stratification-regions"][
-                "region-definitions"
+                "region-inclusions"
             ],
         )
     ]
@@ -224,7 +224,7 @@ def get_happy_stratification_set_indices(wildcards, config, checkpoints):
         for x in filter(
             lambda z: z["name"] != "*",
             config["genomes"][config["genome-build"]]["stratification-regions"][
-                "region-definitions"
+                "region-inclusions"
             ],
         )
     ]
@@ -237,7 +237,7 @@ def get_happy_stratification_set_indices(wildcards, config, checkpoints):
     return [x for x in range(ceil(len(regions) / beds_per_set))]
 
 
-def flatten_region_definitions(config: dict, reference_build: str) -> list:
+def flatten_region_definitions(config: dict, labels: pd.DataFrame, reference_build: str) -> list:
     """
     Snakemake flattens certain types of configuration dict structures into
     simple string lists when passing the structures into scripts. This flattening
@@ -250,14 +250,12 @@ def flatten_region_definitions(config: dict, reference_build: str) -> list:
 
     As such, we need to flatten it manually, enforcing order.
     """
-    region_definitions = config["genomes"][reference_build]["stratification-regions"][
-        "region-definitions"
+    region_inclusions = config["genomes"][reference_build]["stratification-regions"][
+        "region-inclusions"
     ]
     res = []
-    for region_definition in region_definitions:
-        res.extend(
-            [region_definition["name"], region_definition["label"], region_definition["inclusion"]]
-        )
+    for region in region_inclusions:
+        res.extend([region["name"], labels.loc[region["name"], "label"], region["inclusion"]])
     return res
 
 
@@ -348,7 +346,7 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix, reference_build: str
 
 def get_required_stratifications(wildcards: Wildcards, config: dict, checkpoints: Checkpoints):
     stratification_regions = config["genomes"][config["genome-build"]]["stratification-regions"]
-    target_regions = [region["name"] for region in stratification_regions["region-definitions"]]
+    target_regions = [region["name"] for region in stratification_regions["region-inclusions"]]
     target_files = []
     with checkpoints.get_stratification_linker.get(genome_build=config["genome-build"]).output[
         0

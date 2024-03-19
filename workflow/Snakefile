@@ -59,6 +59,12 @@ validate(manifest_experiment, "../schema/experiment_manifest_schema.yaml")
 validate(manifest_reference, "../schema/reference_manifest_schema.yaml")
 validate(manifest_comparisons, "../schema/comparisons_manifest_schema.yaml")
 
+region_label_df = pd.read_table(
+    config["genomes"][reference_build]["stratification-regions"]["region-labels"]
+)
+validate(region_label_df, "../schema/region_label_manifest_schema.yaml")
+region_label_df = region_label_df.set_index("name", drop=False)
+
 ctf.update_analysis_tracking_files(config, "results")
 
 TARGETS = (tc.construct_targets(config, manifest_experiment, manifest_comparisons),)

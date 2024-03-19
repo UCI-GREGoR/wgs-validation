@@ -72,7 +72,7 @@ def update_analysis_tracking_files(
         for x in filter(
             lambda z: z["name"] != "*",
             config["genomes"][config["genome-build"]]["stratification-regions"][
-                "region-definitions"
+                "region-inclusions"
             ],
         )
     ]
@@ -95,7 +95,7 @@ def get_ftp_tracking_files(config, results_prefix) -> list:
         for x in filter(
             lambda z: z["name"] != "*",
             config["genomes"][config["genome-build"]]["stratification-regions"][
-                "region-definitions"
+                "region-inclusions"
             ],
         )
     ]
