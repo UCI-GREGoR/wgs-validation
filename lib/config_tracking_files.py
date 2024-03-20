@@ -68,12 +68,12 @@ def update_analysis_tracking_files(
     """
     ## configuration data for ftp pulls of stratification sets
     stratification_sets = [
-        x["name"]
+        x
         for x in filter(
-            lambda z: z["name"] != "*",
+            lambda z: z != "*",
             config["genomes"][config["genome-build"]]["stratification-regions"][
                 "region-inclusions"
-            ],
+            ].keys(),
         )
     ]
     for stratification_set in stratification_sets:
@@ -91,12 +91,12 @@ def get_ftp_tracking_files(config, results_prefix) -> list:
     stratification sets.
     """
     stratification_sets = [
-        x["name"]
+        x
         for x in filter(
-            lambda z: z["name"] != "*",
+            lambda z: z != "*",
             config["genomes"][config["genome-build"]]["stratification-regions"][
                 "region-inclusions"
-            ],
+            ].keys(),
         )
     ]
     return [

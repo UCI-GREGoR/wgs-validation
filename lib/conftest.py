@@ -19,11 +19,7 @@ def config():
                     "dir": "ftpdir",
                     "all-stratifications": "vWhatever.all-stratifications.tsv",
                     "region-labels": "fake-file.tsv",
-                    "region-inclusions": [
-                        {"name": "*", "inclusion": ".*"},
-                        {"name": "name1", "inclusion": ".*"},
-                        {"inclusion": ".*", "name": "name2"},
-                    ],
+                    "region-inclusions": {"*": ".*", "name1": ".*", "name2": ".*"},
                 },
             },
         },

@@ -139,18 +139,10 @@ properties:
               region-labels:
                 type: string
               region-inclusions:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    inclusion:
-                      type: string
-                  required:
-                    - name
-                    - inclusion
-                  additionalProperties: no
+                type: object
+                patternProperties:
+                  "^.*$":
+                    type: string
             required:
               - ftp
               - dir

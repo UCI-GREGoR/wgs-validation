@@ -4,7 +4,7 @@
 
 [![codecov](https://codecov.io/gh/UCI-GREGoR/wgs-validation/graph/badge.svg?token=SLLOZX9Y3B)](https://codecov.io/gh/UCI-GREGoR/wgs-validation)
 
-This workflow is intended to be a formal replacement for the _ad hoc_ validation system in place for the original research WGS pipeline circa 2020. The initial effort is designed to replicate as much of the feature set of the original validation schema as possible, but with testing and reproducibility. After that is accomplished, the feature set will be expanded to encompass the extra validation required for research whole genome data.
+This workflow is intended to formally replace _ad hoc_ whole genome sequencing validation workflows using manual or cumbersome invocations of [hap.py](https://github.com/Illumina/hap.py) or equivalent tooling. Separate but analogous support is provided for SNVs and SVs. As SV validation is not standardized in the field as a whole, various implementations of SV validation heuristics are supported to mimic the behavior of various prominent publications.
 
 New global targets should be added in `workflow/Snakefile`. Content in `workflow/Snakefile` and the snakefiles in `workflow/rules` should be specifically _rules_; python infrastructure should be composed as subroutines under `lib/` and constructed in such a manner as to be testable with [pytest](https://docs.pytest.org/en/7.2.x/). Rules can call embedded scripts (in python or R/Rmd) from `workflow/scripts`; again, these should be constructed to be testable with pytest or [testthat](https://testthat.r-lib.org/).
 
@@ -26,6 +26,8 @@ Note that this requires local git ssh key configuration; see [here](https://docs
 ### Step 2: Configure workflow
 
 Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust `config.yaml` to configure the workflow execution, and `manifest.tsv` to specify your sample setup.
+
+#### General Run Configuration
 
 The following settings are recognized in `config/config.yaml`.
 
@@ -58,17 +60,15 @@ under each block:
 |`stratification-regions`|intended to be the GIAB stratification regions, as described [here](https://github.com/genome-in-a-bottle/genome-stratifications). the remote directory will be mirrored locally. these entries are specified as:|
 ||`ftp`: the ftp hosting site|
 ||`dir`: the subdirectory of the ftp hosting site, through the genome build directory|
+||`region-labels`: a manifest of GA4GH-style stratification regions, with short name of region and corresponding human-legible description of the content of the region. see below for how these should be selected in the workflow|
 
+#### Selecting Stratification Regions
 
-Within each genome specification, there can be a set of GA4GH-style stratification regions under the key `region-definitions`. If requested,
-benchmarking metrics can be computed separately for any number of these regions. For each defined regions, the following entries are required:
+hap.py and similar tools are designed to compute both overall metrics and metrics within specific subdivisions of the genome. These divisions can be anything, but are most commonly framed as [genome stratifications](https://github.com/genome-in-a-bottle/genome-stratifications) containing different types of variation that can be challenging for WGS calling tools.
 
-|Configuration Setting|Description|
-|---|---|
-|`name`|region name in hap.py extended output csv. this is a truncated part of the stratification bed filename|
-|`label`|pretty label describing this region type. this is intended to be the text description of the bedfile from one of the NIST READMEs|
-|`inclusion`|a regex to match against experimental replicate entry in manifest (see below). only reports containing samples matching this pattern will feature this hap.py result set. if desired, `".*"` can be specified here to match against all reports|
+The GA4GH stratification regions referenced above are numerous, and many of those regions aren't particularly interesting or interpretable. Furthermore, hap.py is resource-intensive, and computing superfluous comparisons that won't be analyzed is undesirable. As such, this workflow requires the user to select individual stratification sets for inclusion in the output reports. The inclusions are specified as key-value pairs in `config/config.yaml` under the configuration key `genomes/{genome-build}/stratification-regions/region-inclusions`. The keys are names of regions as specified in the corresponding `region-labels` manifest; the values are regular expressions describing the sample identifiers that should be evaluated within those regions. To select all samples, use the regular expression `"^.*$"`.
 
+#### Run Manifests
 
 The following columns are expected in the experiment manifest, by default at `config/manifest_experiment.tsv`:
 
@@ -137,8 +137,8 @@ After the completion of a run, there will be control validation reports, in html
 One report will exist per configured comparison, in `config/manifest_comparisons.tsv` column `report`.
 The contents of the report are:
 
-- tabular summaries of requested `region-definitions` from the configuration
-- plots of requested `region-definitions` from the configuration
+- tabular summaries of requested stratification regions from the configuration
+- plots of requested stratification regions from the configuration
 - summary information about the R execution environment used to create the report
 
 Other information will be included in future versions.

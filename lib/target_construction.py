@@ -184,12 +184,12 @@ def get_happy_stratification_by_index(wildcards, config, checkpoints):
     """
     beds_per_set = config["happy-bedfiles-per-stratification"]
     stratification_sets = [
-        x["name"]
+        x
         for x in filter(
-            lambda z: z["name"] != "*",
+            lambda z: z != "*",
             config["genomes"][config["genome-build"]]["stratification-regions"][
                 "region-inclusions"
-            ],
+            ].keys(),
         )
     ]
     regions = pd.read_table(
@@ -220,12 +220,12 @@ def get_happy_stratification_set_indices(wildcards, config, checkpoints):
     """
     beds_per_set = config["happy-bedfiles-per-stratification"]
     stratification_sets = [
-        x["name"]
+        x
         for x in filter(
-            lambda z: z["name"] != "*",
+            lambda z: z != "*",
             config["genomes"][config["genome-build"]]["stratification-regions"][
                 "region-inclusions"
-            ],
+            ].keys(),
         )
     ]
     regions = pd.read_table(
@@ -254,8 +254,8 @@ def flatten_region_definitions(config: dict, labels: pd.DataFrame, reference_bui
         "region-inclusions"
     ]
     res = []
-    for region in region_inclusions:
-        res.extend([region["name"], labels.loc[region["name"], "label"], region["inclusion"]])
+    for region_name, region_inclusion in region_inclusions.items():
+        res.extend([region_name, labels.loc[region_name, "label"], region_inclusion])
     return res
 
 
@@ -346,7 +346,7 @@ def find_datasets_in_subset(wildcards, checkpoints, prefix, reference_build: str
 
 def get_required_stratifications(wildcards: Wildcards, config: dict, checkpoints: Checkpoints):
     stratification_regions = config["genomes"][config["genome-build"]]["stratification-regions"]
-    target_regions = [region["name"] for region in stratification_regions["region-inclusions"]]
+    target_regions = [region for region in stratification_regions["region-inclusions"].keys()]
     target_files = []
     with checkpoints.get_stratification_linker.get(genome_build=config["genome-build"]).output[
         0
