@@ -68,6 +68,17 @@ hap.py and similar tools are designed to compute both overall metrics and metric
 
 The GA4GH stratification regions referenced above are numerous, and many of those regions aren't particularly interesting or interpretable. Furthermore, hap.py is resource-intensive, and computing superfluous comparisons that won't be analyzed is undesirable. As such, this workflow requires the user to select individual stratification sets for inclusion in the output reports. The inclusions are specified as key-value pairs in `config/config.yaml` under the configuration key `genomes/{genome-build}/stratification-regions/region-inclusions`. The keys are names of regions as specified in the corresponding `region-labels` manifest; the values are regular expressions describing the sample identifiers that should be evaluated within those regions. To select all samples, use the regular expression `"^.*$"`.
 
+As an example, the following would evaluate the whole genome background, annotated as `*` in the GA4GH v3.1 region set, against all samples, but the `alldifficultregions` set would only be evaluated in samples labeled (in part) NA12878:
+
+```yaml
+genomes:
+    grch38:
+        stratification-regions:
+            region-inclusions:
+                "*": ".*"
+                "alldifficultregions": ".*NA12878.*"
+```
+
 #### Run Manifests
 
 The following columns are expected in the experiment manifest, by default at `config/manifest_experiment.tsv`:
