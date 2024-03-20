@@ -100,7 +100,7 @@ def test_map_experimental_file(wildcards_comparison, manifest_experiment):
     Test that map experimental file can pull out a vcf by unique identifier from
     the experiment dataset manifest
     """
-    expected = "path/to/exp_filename.vcf.gz"
+    expected = ["path/to/exp_filename.vcf.gz"]
     observed = tc.map_experimental_file(wildcards_comparison, manifest_experiment)
     assert observed == expected
 
