@@ -41,9 +41,9 @@ genomes:
         inclusion: "NA24385"
     stratification-regions:
       ftp: "ftp-trace.ncbi.nlm.nih.gov"
-      dir: "ReferenceSamples/giab/release/genome-stratifications/v3.1/GRCh38"
-      all-stratifications: "v3.1-GRCh38-all-stratifications.tsv"
-      region-labels: "resources/v3.1.region-labels.tsv"
+      dir: "ReferenceSamples/giab/release/genome-stratifications/v3.3/GRCh38@all"
+      all-stratifications: "GRCh38-all-stratifications.tsv"
+      region-labels: "resources/v3.3.region-labels.tsv"
       region-inclusions:
         "*": ".*"
         "alldifficultregions": ".*"
