@@ -136,27 +136,19 @@ properties:
                 type: string
               all-stratifications:
                 type: string
-              region-definitions:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    label:
-                      type: string
-                    inclusion:
-                      type: string
-                  required:
-                    - name
-                    - label
-                    - inclusion
-                  additionalProperties: no
+              region-labels:
+                type: string
+              region-inclusions:
+                type: object
+                patternProperties:
+                  "^.*$":
+                    type: string
             required:
               - ftp
               - dir
               - all-stratifications
-              - region-definitions
+              - region-labels
+              - region-inclusions
             additionalProperties: no
         required:
           - fasta

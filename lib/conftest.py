@@ -18,15 +18,27 @@ def config():
                     "ftp": "ftp://target",
                     "dir": "ftpdir",
                     "all-stratifications": "vWhatever.all-stratifications.tsv",
-                    "region-definitions": [
-                        {"name": "*", "label": "everybody", "inclusion": ".*"},
-                        {"name": "name1", "inclusion": ".*", "label": "some1"},
-                        {"name": "name2", "label": "some2", "inclusion": ".*"},
-                    ],
+                    "region-labels": "fake-file.tsv",
+                    "region-inclusions": {"*": ".*", "name1": ".*", "name2": ".*"},
                 },
             },
         },
     }
+    return res
+
+
+@pytest.fixture
+def label_df():
+    """
+    pandas DataFrame of mapping between GA4GH-style stratification
+    set names and their plaintext, human-legible descriptions
+    """
+    res = pd.DataFrame(
+        {
+            "name": ["*", "name1", "name2", "name3"],
+            "label": ["everybody", "some1", "some2", "some3"],
+        }
+    ).set_index("name", drop=False)
     return res
 
 

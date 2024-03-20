@@ -14,7 +14,7 @@ rule control_validation_report:
         manifest_experiment=manifest_experiment,
         manifest_reference=manifest_reference,
         selected_stratifications=lambda wildcards: tc.flatten_region_definitions(
-            config, reference_build
+            config, region_label_df, reference_build
         ),
         comparison_subjects=lambda wildcards: tc.get_happy_comparison_subjects(
             wildcards, manifest_experiment, manifest_comparisons

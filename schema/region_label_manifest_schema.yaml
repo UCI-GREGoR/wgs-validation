@@ -1,0 +1,13 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: an entry in the stratification region label manifest
+properties:
+  name:
+    type: string
+    description: "name of stratification region"
+  label:
+    type: string
+    description: "human-legible description of region, to be displayed in output reports"
+required:
+  - name
+  - label
+additionalProperties: no
