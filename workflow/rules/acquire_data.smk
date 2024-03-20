@@ -25,8 +25,49 @@ rule download_reference_data:
         "else cp {params} {output} ; fi"
 
 
-use rule download_reference_data as download_experimental_data with:
+rule merge_experimental_data:
+    """
+    Update support for experimental vcf input
+    to support multiple input vcfs from the same
+    sample.
+    """
+    input:
+        vcf=lambda wildcards: expand(
+            "results/experimentals/{{experimental}}/{index}.vcf.gz",
+            index=[
+                x for x in range(len(tc.map_experimental_file(wildcards, manifest_experiment)))
+            ],
+        ),
+        tbi=lambda wildcards: expand(
+            "results/experimentals/{{experimental}}/{index}.vcf.gz.tbi",
+            index=[
+                x for x in range(len(tc.map_experimental_file(wildcards, manifest_experiment)))
+            ],
+        ),
     output:
         "results/experimentals/{experimental,[^/]+}.vcf.gz",
-    params:
-        lambda wildcards: tc.map_experimental_file(wildcards, manifest_experiment),
+    conda:
+        "../envs/bcftools.yaml"
+    threads: config_resources["bcftools"]["threads"]
+    resources:
+        slurm_partition=rc.select_partition(
+            config_resources["bcftools"]["partition"], config_resources["partitions"]
+        ),
+        mem_mb=config_resources["bcftools"]["memory"],
+    shell:
+        "bcftools concat --allow-overlaps -D -O u --threads {threads} {input.vcf} | "
+        "bcftools sort -O z -o {output}"
+
+
+rule download_experimental_data:
+    """
+    Get a copy of an experimental input file.
+    """
+    input:
+        lambda wildcards: tc.map_experimental_file(wildcards, manifest_experiment)[
+            int(wildcards.index)
+        ],
+    output:
+        temp("results/experimentals/{experimental}/{index}.vcf.gz"),
+    shell:
+        "cp {input} {output}"

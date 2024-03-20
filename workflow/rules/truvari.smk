@@ -6,7 +6,7 @@ rule tabix_index:
     input:
         "results/{dataset}/{prefix}.vcf.gz",
     output:
-        "results/{dataset,references|experimentals}/{prefix}.vcf.gz.tbi",
+        temp("results/{dataset,references|experimentals}/{prefix}.vcf.gz.tbi"),
     conda:
         "../envs/bcftools.yaml"
     threads: config_resources["bcftools"]["threads"]

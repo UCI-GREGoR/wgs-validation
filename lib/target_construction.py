@@ -14,6 +14,22 @@ S3 = S3RemoteProvider()
 HTTP = HTTPRemoteProvider()
 
 
+def annotate_remote_file(fn: str):
+    """
+    try our best to automagically wrap files with remote handlers.
+    the FTP remote handler, as of early 2023, is a bit of a mess
+    that breaks everything, so it's not included here. note that
+    rules using the S3 remote with environment SSO caching should
+    be set to high priority, lest the SSO session time out while
+    the rule is queued.
+    """
+    if fn.startswith("https://") or fn.startswith("http://"):
+        return HTTP.remote(fn)
+    if fn.startswith("s3://"):
+        return S3.remote(fn)
+    return fn
+
+
 def wrap_remote_file(fn: str) -> str | AnnotatedString:
     """
     Given a filename, potentially wrap it in a remote handler
@@ -173,8 +189,9 @@ def map_experimental_file(wildcards: Namedlist, manifest: pd.DataFrame) -> str |
     ## and return wrapped objects related to the remote provider service when appropriate.
     ## There have been periodic issues with the remote provider interface, but it seems
     ## to be working, somewhat inefficiently but very conveniently, for the time being.
-    mapped_name = manifest.loc[wildcards.experimental, "vcf"]
-    return mapped_name
+    mapped_names = manifest[manifest["experimental_dataset"] == wildcards.experimental]["vcf"]
+    res = [annotate_remote_file(x) for x in mapped_names]
+    return res
 
 
 def get_happy_stratification_by_index(wildcards, config, checkpoints):

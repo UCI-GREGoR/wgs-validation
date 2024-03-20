@@ -35,9 +35,7 @@ tempDir = "temp"
 manifest_experiment = config["experiment-manifest"]
 manifest_reference = config["reference-manifest"]
 manifest_comparisons = config["comparisons-manifest"]
-manifest_experiment = pd.read_csv(manifest_experiment, sep="\t").set_index(
-    "experimental_dataset", drop=False
-)
+manifest_experiment = pd.read_csv(manifest_experiment, sep="\t")
 manifest_reference = pd.read_csv(manifest_reference, sep="\t").set_index(
     "reference_dataset", drop=False
 )
