@@ -74,9 +74,11 @@ The following columns are expected in the experiment manifest, by default at `co
 
 |Manifest Entry|Description|
 |---|---|
-|`experimental_dataset`|arbitrary, unique alias for this experimental dataset|
+|`experimental_dataset`|arbitrary identifier for this dataset|
 |`replicate`|identifier linking experimental subjects representing the same underlying sample and conditions. this identifier will be used to collapse multiple subjects into single mean/SE estimates in the downstream report, if multiple subjects with the same identifier are included in the same report|
 |`vcf`|path to experimental dataset vcf|
+
+Note that for the experimental manifest, multiple rows with the same `experimental_dataset` value can be included with different corresponding vcfs. If this is the case, the multiple vcfs will be concatenated and sorted into a single vcf before validation. The intended use case of this functionality is on-the-fly concatenation of single chromosome vcfs per sample.
 
 The following columns are expected in the reference manifest, by default at `config/manifest_reference.tsv`:
 

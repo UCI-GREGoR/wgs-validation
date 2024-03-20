@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- input experimental datasets can be specified as multiple vcfs with the same identifier on multiple rows.
+  the corresponding vcfs will be concatenated and sorted before use. the intended use case of this functionality
+  is on-the-fly combination of single-sample single-chromosome vcfs.
+
 ### Changed
 
 - user configuration is fairly heavily refactored to be more legible/less susceptible to typos
