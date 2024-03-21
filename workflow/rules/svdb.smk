@@ -7,9 +7,6 @@ rule sv_svdb_within_dataset:
         stratification_bed=lambda wildcards: tc.get_bedfile_from_name(
             wildcards,
             checkpoints,
-            "results/stratification-sets/{}/subsets_for_happy/{{subset_group}}".format(
-                reference_build
-            ),
             reference_build,
         ),
         region_bed="results/confident-regions/{region}.bed",

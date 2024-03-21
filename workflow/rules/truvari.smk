@@ -25,12 +25,10 @@ rule sv_within_dataset:
     """
     input:
         vcf="results/{dataset_type}/{dataset_name}.vcf.gz",
-        stratification_bed=lambda wildcards: get_bedfile_from_name(
+        stratification_bed=lambda wildcards: tc.get_bedfile_from_name(
             wildcards,
             checkpoints,
-            "results/stratification-sets/{}/subsets_for_happy/{{subset_group}}".format(
-                reference_build
-            ),
+            reference_build,
         ),
         region_bed="results/confident-regions/{region}.bed",
     output:
@@ -75,12 +73,10 @@ rule truvari_bench:
         ),
         fasta="results/{}/ref.fasta".format(reference_build),
         fai="results/{}/ref.fasta.fai".format(reference_build),
-        includebed=lambda wildcards: get_bedfile_from_name(
+        includebed=lambda wildcards: tc.get_bedfile_from_name(
             wildcards,
             checkpoints,
-            "results/stratification-sets/{}/subsets_for_happy/{{subset_group}}".format(
-                reference_build
-            ),
+            reference_build,
         ),
     output:
         temp(

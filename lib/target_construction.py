@@ -276,7 +276,7 @@ def flatten_region_definitions(config: dict, labels: pd.DataFrame, reference_bui
     return res
 
 
-def get_bedfile_from_name(wildcards, checkpoints, prefix, reference_build: str):
+def get_bedfile_from_name(wildcards, checkpoints, reference_build: str):
     """
     pull data from checkpoint output
     """
@@ -291,7 +291,7 @@ def get_bedfile_from_name(wildcards, checkpoints, prefix, reference_build: str):
         for line in f.readlines():
             line_data = line.split("\t")
             if line_data[0].strip().rstrip() == wildcards.subset_name:
-                return "{}/{}".format(prefix, line_data[1].strip().rstrip())
+                return line_data[1].strip().rstrip()
     raise ValueError(
         'cannot find stratification region with name "{}"'.format(wildcards.subset_name)
     )
