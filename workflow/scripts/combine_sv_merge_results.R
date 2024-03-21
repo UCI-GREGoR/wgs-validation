@@ -319,7 +319,7 @@ run.combine <- function(toolname,
     stop("Unrecognized tool name: ", toolname, sep = "")
   }
   fxn(
-    toolname, input.comparisons, experimental.code,
+    input.comparisons, experimental.code,
     reference.code, output.csv
   )
 }
