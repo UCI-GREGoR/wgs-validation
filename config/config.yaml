@@ -49,3 +49,18 @@ genomes:
         "alldifficultregions": ".*"
         "alllowmapandsegdupregions": ".*"
         "notinalllowmapandsegdupregions": ".*"
+  grch37:
+    fasta: "https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/references/GRCh37/hs37d5.fa.gz"
+    confident-regions:
+      all:
+        bed: "resources/grch37.bed"
+    stratification-regions:
+      ftp: "ftp-trace.ncbi.nlm.nih.gov"
+      dir: "ReferenceSamples/giab/release/genome-stratifications/v3.3/GRCh37@all"
+      all-stratifications: "GRCh37-all-stratifications.tsv"
+      region-labels: "resources/v3.3.region-labels.tsv"
+      region-inclusions:
+        "*": ".*"
+        "alldifficultregions": ".*"
+        "alllowmapandsegdupregions": ".*"
+        "notinalllowmapandsegdupregions": ".*"
